@@ -10,9 +10,8 @@ export async function registrarUsuario(req, res) {
         res.status(200).json(resposta)
 
     } catch (error) {
-
-        return res.status(500).json(error.message)
-
+        console.error(error)
+        res.status(error.statusCode || 500).json({ erro: error.message })
     }
 
 }
@@ -35,4 +34,4 @@ export async function login(req, res) {
         res.status(error.statusCode || 500).json({ erro: error.message })
     }
 
-}
+}   

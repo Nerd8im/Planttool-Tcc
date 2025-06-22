@@ -22,17 +22,23 @@ class Usuario {
         const salt = 12
 
         if (!nome, !sobrenome, !email, !senha) {
-            throw new Error("Todos os campos são obrigatórios")
+            throw criarErro("Todos os campos são obrigatórios", 400)
+        }
+
+        const queryVerifica = "SELECT user_id FROM tb_user WHERE user_email = ?"
+        const [resultadoVerificacao] = await pool.execute(queryVerifica, [email])
+
+        if (resultadoVerificacao.length > 0) {
+            throw criarErro("Já existe um usuário cadastrado com esse e-mail", 409)
         }
 
         const id = uuidv4()
-        const query = "INSERT INTO tb_user(user_id, user_nome, user_sobrenome, user_email, user_senha) VALUES (?, ?, ?, ?, ?)"
+        const queryRegistro = "INSERT INTO tb_user(user_id, user_nome, user_sobrenome, user_email, user_senha) VALUES (?, ?, ?, ?, ?)"
 
         try {
-
             const senhaHash = await bcrypt.hash(senha, salt)
 
-            const [respostaDB] = await pool.execute(query, [
+            await pool.execute(queryRegistro, [
                 id,
                 nome,
                 sobrenome,
@@ -41,9 +47,7 @@ class Usuario {
             ])
 
         } catch (error) {
-
-            throw new Error("Erro ao registrar úsuario, erro: " + error.message)
-
+            throw criarErro("Erro ao registrar usuário", 500)
         }
 
     }
@@ -63,8 +67,8 @@ class Usuario {
 
             console.log(senhaReal)
 
-            if(senhaReal.length === 0){
-               throw criarErro("Úsuario não encontrado", 404)
+            if (senhaReal.length === 0) {
+                throw criarErro("Úsuario não encontrado", 404)
             }
 
             if (await bcrypt.compare(senha, senhaReal[0].user_senha) == true) {
@@ -89,8 +93,22 @@ class Usuario {
         }
 
     }
+
+    async atualizarFoto(imagemBuffer) {
+        const query = `
+        UPDATE tb_user SET user_foto = ? WHERE user_id = ?`
+
+        try {
+            const [respostaDb] = await pool.execute(query, [imagemBuffer, this.id])
+
+            console.log(respostaDb)
+        } catch (error) {
+            console.log(error)
+            throw criarErro("Erro ao atualizar foto de perfil", 500)
+        }
+
+    }
+
 }
-
-
 
 export default Usuario
