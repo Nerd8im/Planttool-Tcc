@@ -8,13 +8,10 @@ CREATE TABLE tb_user(
     user_sobrenome VARCHAR(244),
     user_email VARCHAR(244) UNIQUE,
     user_senha VARCHAR(100),
-    user_foto LONGBLOB
+    user_foto VARCHAR(255)
 );
 
-INSERT INTO tb_user (user_id, user_nome, user_sobrenome, user_email, user_senha, user_foto) VALUES
-('b96f0f89-0137-4f62-b80e-cd80210c6902', 'Lucas', 'Almeida', 'lucas.almeida@email.com', 'senha123', NULL),
-('3e1e9d57-23e9-4b4d-a730-fd3d08d5ce70', 'Marina', 'Souza', 'marina.souza@email.com', 'senha456', NULL);
-
+SELECT * FROM tb_user;
 
 CREATE TABLE tb_classificacao_botanica (
     classificacao_id VARCHAR(60) PRIMARY KEY,

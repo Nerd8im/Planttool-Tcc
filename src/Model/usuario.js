@@ -94,12 +94,11 @@ class Usuario {
 
     }
 
-    async atualizarFoto(imagemBuffer) {
-        const query = `
-        UPDATE tb_user SET user_foto = ? WHERE user_id = ?`
+    async atualizarFoto(caminhoImagem) {
+        const query = `UPDATE tb_user SET user_foto = ? WHERE user_id = ?`
 
         try {
-            const [respostaDb] = await pool.execute(query, [imagemBuffer, this.id])
+            const [respostaDb] = await pool.execute(query, [caminhoImagem, this.id])
 
             console.log(respostaDb)
         } catch (error) {
