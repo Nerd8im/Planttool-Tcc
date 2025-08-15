@@ -1,0 +1,239 @@
+{
+	"info": {
+		"_postman_id": "62901e5f-bb90-4c91-9aeb-179842345b7b",
+		"name": "planttols",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38629806"
+	},
+	"item": [
+		{
+			"name": "login",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"churrascado@email.com\",\r\n    \"senha\": \"12345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}/login",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "registrar",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"nome\": \"tchola\",\r\n    \"sobrenome\": \"mogado\",\r\n    \"email\": \"churrascado@email.com\",\r\n    \"senha\": \"12345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{urlBase}}/registrarUsuario",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"registrarUsuario"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "trocar foto de perfil",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDE1ODgyNzItM2U0MS00YTQ4LWFhMGEtODJiYzVkMzJhZWM4IiwidXNlcl9ub21lIjoidGNob2xhIiwidXNlcl9zb2JyZW5vbWUiOiJtb2dhZG8iLCJ1c2VyX2VtYWlsIjoiY2h1cnJhc2NhZG9AZW1haWwuY29tIiwidXNlcl9mb3RvIjpudWxsLCJpYXQiOjE3NTUyMjAyMzgsImV4cCI6MTc1NTIzMTAzOH0.EbRaBOJWPdSI1W4g28qrcjE1ZDlgFIidSM4pSGDd7V0",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "foto",
+							"type": "file",
+							"src": "/C:/Users/natha/Downloads/megumin.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{urlBase}}/trocarFotoPerfil",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"trocarFotoPerfil"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload imagem",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "foto",
+							"type": "file",
+							"src": "/C:/Users/natha/Downloads/megumin.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{urlBase}}/uploadImagem",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"uploadImagem"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "pegar foto",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "foto",
+							"type": "file",
+							"src": "/C:/Users/natha/Downloads/aqua.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{urlBase}}/imagem/",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"imagem",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "pegar foto do usuário",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDE1ODgyNzItM2U0MS00YTQ4LWFhMGEtODJiYzVkMzJhZWM4IiwidXNlcl9ub21lIjoidGNob2xhIiwidXNlcl9zb2JyZW5vbWUiOiJtb2dhZG8iLCJ1c2VyX2VtYWlsIjoiY2h1cnJhc2NhZG9AZW1haWwuY29tIiwidXNlcl9mb3RvIjoidXBsb2Fkc19wcml2YWRvc1xcdXN1YXJpb3NcXDQxNTg4MjcyLTNlNDEtNGE0OC1hYTBhLTgyYmM1ZDMyYWVjOC5qcGciLCJpYXQiOjE3NTUyMjUzNzcsImV4cCI6MTc1NTIzNjE3N30.dVzZARYGWWpMIpm3GCn92autVB3I95roZfY_wjycNDU",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "foto",
+							"type": "file",
+							"src": "/C:/Users/natha/Downloads/aqua.jpg"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{urlBase}}/imagem/usuario/41588272-3e41-4a48-aa0a-82bc5d32aec8.jpg",
+					"host": [
+						"{{urlBase}}"
+					],
+					"path": [
+						"imagem",
+						"usuario",
+						"41588272-3e41-4a48-aa0a-82bc5d32aec8.jpg"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
