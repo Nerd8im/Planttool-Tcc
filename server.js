@@ -25,7 +25,7 @@ app.post(`${rota}/registrarUsuario`, registrarUsuario)
 
 app.post(`${rota}/login`, login)
 
-app.post(`${rota}/uploadImagem`, uploadPublico, postarImagem)
+app.post(`${rota}/uploadImagem`, autenticarToken, uploadPublico, postarImagem)
 
 app.put(`${rota}/trocarFotoPerfil`, autenticarToken, uploadPrivado, trocarFotoPerfil)
 

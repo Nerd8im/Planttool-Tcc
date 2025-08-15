@@ -12,7 +12,7 @@ export function uploadImagem(pastaBase, publico) {
 
     //aqui ela verifica se é publico ou privado e altera o destino para as pastas certas
     if (publico === true) {
-        destinoFinal = path.join("publico", pastaBase)
+        destinoFinal = path.join("uploads_publicos", pastaBase)
     } else {
         destinoFinal = path.join("uploads_privados", pastaBase)
     }
