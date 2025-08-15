@@ -8,12 +8,15 @@ import path from "path"
 
 export async function trocarFotoPerfil(req, res) {
 
-       if (!req.file) {
+    const id = req.usuario.user_id
+
+    if (!req.file) {
         throw criarErro("Imagem não enviada", 400);
     }
 
     const caminhoOriginal = req.file.path;
-    const caminhoFinal = path.join(path.dirname(caminhoOriginal), "foto-" + req.file.filename);
+    /* mudei aqui pra foto ser apenas o id do usuário. Obs: esse path é bizonho de útil */
+    const caminhoFinal = path.join(path.dirname(caminhoOriginal), id.concat(path.extname(req.file.originalname)));
 
     try {
         const metadata = await sharp(caminhoOriginal).metadata();

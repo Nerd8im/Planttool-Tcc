@@ -1,4 +1,8 @@
 import Usuario from "../Model/usuario.js"
+import { criarErro } from "../utils/erros.js"
+import sharp from "sharp"
+import fs from "fs"
+import path from "path"
 
 export async function registrarUsuario(req, res) {
 
@@ -34,4 +38,34 @@ export async function login(req, res) {
         res.status(error.statusCode || 500).json({ erro: error.message })
     }
 
-}   
+}
+
+export async function postarImagem(req, res) {
+    if (!req.file) {
+        throw criarErro("Imagem não enviada", 400);
+    }
+
+    const caminhoOriginal = req.file.path;
+    const caminhoFinal = path.join(path.dirname(caminhoOriginal), "foto-" + req.file.filename);
+
+    try {
+        const metadata = await sharp(caminhoOriginal).metadata();
+
+        if (metadata.width > 1024 || metadata.height > 1024) {
+            await sharp(caminhoOriginal)
+                .resize({ width: 1024, height: 1024, fit: "inside" })
+                .jpeg({ quality: 80 })
+                .toFile(caminhoFinal);
+            fs.unlinkSync(caminhoOriginal);
+
+        } else {
+            fs.renameSync(caminhoOriginal, caminhoFinal);
+        }
+
+        return res.status(200).json({ mensagem: "Imagem enviada com sucesso", caminho: caminhoFinal });
+
+    } catch (error) {
+        console.error(error);
+        res.status(error.statusCode || 500).json({ erro: error.message });
+    }
+}
