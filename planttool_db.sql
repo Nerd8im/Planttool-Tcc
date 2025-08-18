@@ -1,5 +1,5 @@
-create database plantool_db;
-use plantool_db;
+create database planttool_db;
+use planttool_db;
 
 
 CREATE TABLE tb_user(
@@ -25,7 +25,7 @@ INSERT INTO tb_classificacao_botanica (classificacao_id, classificacao_nome, cla
 
 
 CREATE TABLE tb_plantaEspecie(
-plantaEspecie_id VARCHAR(60) PRIMARY KEY UNIQUE,
+	plantaEspecie_id VARCHAR(60) PRIMARY KEY UNIQUE,
     plantaEspecie_nome VARCHAR(244),
     plantaEspecie_descricao TEXT,
     plantaEspecie_cuidados TEXT,

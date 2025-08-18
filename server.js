@@ -3,7 +3,7 @@ import 'dotenv/config.js'
 // import path from "path"
 // import cors from "cors"
 import autenticarToken from "./src/middlewares/autenticarToken.js"
-import { login, postarImagem, registrarUsuario } from "./src/Controllers/post_controllers.js"
+import { login, postarImagem, registrarUsuario, registrarEspecie } from "./src/Controllers/post_controllers.js"
 import { trocarFotoPerfil} from "./src/Controllers/put_controllers.js"
 import { uploadImagem } from "./src/middlewares/uploadImagem.js"
 import { pegarImagem, pegarImagemUsuario } from "./src/Controllers/get_controllers.js"
@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }))
 
 // }))
 
-//Rotas do úsuario
+//Rotas do usuário
 app.post(`${rota}/registrarUsuario`, registrarUsuario)
 
 app.post(`${rota}/login`, login)
@@ -39,6 +39,10 @@ mas é necessário verificar se o id da imagem corresponde ao id do usuário aut
 e se a imagem existe (remova esse comentário plis)
 */
 app.get(`${rota}/imagem/usuario/:image`, autenticarToken, pegarImagemUsuario)
+
+//rotas para especie de plantas
+app.post(`${rota}/registrarEspecies`, registrarEspecie)
+
 
 app.listen(porta, () => {
     console.log(`Servidor rodando em http://localhost:${porta}/planttool/v1`)

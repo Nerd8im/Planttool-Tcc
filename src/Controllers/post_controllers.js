@@ -1,4 +1,5 @@
 import Usuario from "../Model/usuario.js"
+import EspeciePlanta from "../Model/plantaEspecie.js"
 import { criarErro } from "../utils/erros.js"
 import sharp from "sharp"
 import fs from "fs"
@@ -68,4 +69,15 @@ export async function postarImagem(req, res) {
         console.error(error);
         res.status(error.statusCode || 500).json({ erro: error.message });
     }
+}
+
+//EspeciePlanta
+export async function registrarEspecie(req, res) {
+
+    const {id, nome, descricao, cuidados, classificacao} = req.body
+
+    let especieNova = new EspeciePlanta(id, nome, descricao, cuidados, classificacao)
+    console.log(especieNova)
+
+    especieNova.registrar()
 }
