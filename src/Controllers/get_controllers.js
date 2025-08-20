@@ -2,6 +2,7 @@ import Usuario from "../Model/usuario.js";
 import path from "path";
 import fs from "fs";
 import { criarErro } from "../utils/erros.js";
+import EspeciePlanta from "../Model/plantaEspecie.js";
 
 
 export async function pegarImagem(req, res) {
@@ -48,4 +49,19 @@ export async function pegarImagemUsuario(req, res) {
         console.error(error);
         res.status(error.statusCode || 500).json({ erro: error.message });
     }
+}
+
+//Especies de Plantas
+
+export async function buscarEspecies(req, res){
+
+    try {
+        let ListaeEspecies = await EspeciePlanta.buscarEspecies()
+
+        res.status(200).json(ListaeEspecies)
+    } catch (error) {
+        criarErro("Erro ao buscar", 500)
+    }
+    
+
 }

@@ -74,10 +74,20 @@ export async function postarImagem(req, res) {
 //EspeciePlanta
 export async function registrarEspecie(req, res) {
 
-    const {id, nome, descricao, cuidados, classificacao} = req.body
+    const {nome, descricao, cuidados, classificacao, rega} = req.body
+    
+    if(!nome || !descricao || cuidados|| !classificacao || !rega){
+        throw criarErro("Todos os campos são obrigatórios")
+    }
 
-    let especieNova = new EspeciePlanta(id, nome, descricao, cuidados, classificacao)
-    console.log(especieNova)
+    try {
 
-    especieNova.registrar()
+        const respostaRegistro = await EspeciePlanta.registrar(nome, descricao, cuidados, rega, classificacao)
+
+        res.status(200).json(respostaRegistro)
+
+    } catch (error) {
+        throw criarErro("Erro ao tentar registrar a especie", 500)
+    }
+    
 }

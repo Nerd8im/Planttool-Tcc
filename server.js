@@ -32,17 +32,12 @@ app.put(`${rota}/trocarFotoPerfil`, autenticarToken, uploadPrivado, trocarFotoPe
 // Rotas de imagens
 app.get(`${rota}/imagem/:image`, pegarImagem)
 
-/* 
-como o nome da imagem é o id do usuário, não precisa de um middleware de autenticação
-pra poder ver se é realmente o usuário "dono da foto",
-mas é necessário verificar se o id da imagem corresponde ao id do usuário autenticado
-e se a imagem existe (remova esse comentário plis)
-*/
 app.get(`${rota}/imagem/usuario/:image`, autenticarToken, pegarImagemUsuario)
 
 //rotas para especie de plantas
 app.post(`${rota}/registrarEspecies`, registrarEspecie)
 
+app.get(`${rota}/especies`, autenticarToken, buscarEspecies)
 
 app.listen(porta, () => {
     console.log(`Servidor rodando em http://localhost:${porta}/planttool/v1`)
