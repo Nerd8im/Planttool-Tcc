@@ -32,8 +32,8 @@ CREATE TABLE tb_plantaEspecie(
 );
 
 INSERT INTO tb_plantaEspecie (plantaEspecie_nome, plantaEspecie_descricao, plantaEspecie_cuidados, plantaEspecie_foto, plantaEspecie_intervalo_rega_horas, classificacao_id) VALUES
-('Ficus lyrata', 'Também conhecida como figueira-lira, ótima para ambientes internos.', 'Requer luz indireta e regas moderadas.', NULL, 72, 1),
-('Pinus elliottii', 'Espécie de pinheiro comum no sul do Brasil.', 'Prefere solo arenoso e boa iluminação.', NULL, 168, 2);
+('Ficus lyrata', 'Também conhecida como figueira-lira, ótima para ambientes internos.', 'Requer luz indireta e regas moderadas.', 'publico\imagem_plantas\placeholder.jpg', 72, 1),
+('Pinus elliottii', 'Espécie de pinheiro comum no sul do Brasil.', 'Prefere solo arenoso e boa iluminação.', 'publico\imagem_plantas\placeholder.jpg', 168, 2);
 
 CREATE TABLE tb_guiaCuidado (
     guia_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -52,7 +52,7 @@ CREATE TABLE tb_userPlanta (
     user_id VARCHAR(60),
     plantaEspecie_id INT,
     userPlanta_nome VARCHAR(244),
-    userPlanta_foto LONGBLOB,
+    userPlanta_foto varchar(244),
     data_plantio DATE,
     FOREIGN KEY (user_id) REFERENCES tb_user(user_id),
     FOREIGN KEY (plantaEspecie_id) REFERENCES tb_plantaEspecie(plantaEspecie_id)

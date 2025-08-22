@@ -23,7 +23,7 @@ export async function pegarImagem(req, res) {
         console.error(error);
         res.status(error.statusCode || 500).json({ erro: error.message });
     }
-    
+
 }
 
 export async function pegarImagemUsuario(req, res) {
@@ -35,7 +35,7 @@ export async function pegarImagemUsuario(req, res) {
     const caminho = path.resolve('uploads_privados', 'usuarios', image);
 
     console.log(caminho);
-    
+
     if (image !== id.concat('.jpg')) {
         throw criarErro("Imagem não corresponde ao usuário autenticado", 403);
     } else if (!fs.existsSync(caminho)) {
@@ -53,15 +53,19 @@ export async function pegarImagemUsuario(req, res) {
 
 //Especies de Plantas
 
-export async function buscarEspecies(req, res){
+export async function buscarEspecies(req, res) {
 
     try {
-        let ListaeEspecies = await EspeciePlanta.buscarEspecies()
+        let ListaEspecies = await EspeciePlanta.buscarEspecies()
 
-        res.status(200).json(ListaeEspecies)
+        if (ListaEspecies.length === 0) {
+            return res.status(200).json({ mensagem: "Nenhuma espécie cadastrada" })
+        }
+
+        res.status(200).json(ListaEspecies)
     } catch (error) {
-        criarErro("Erro ao buscar", 500)
+        throw criarErro("Erro ao buscar", 500)
     }
-    
+
 
 }

@@ -1,5 +1,6 @@
 import Usuario from "../Model/usuario.js"
 import EspeciePlanta from "../Model/plantaEspecie.js"
+import PlantaUsuario from "../Model/plantaUsuario.js"
 import { criarErro } from "../utils/erros.js"
 import sharp from "sharp"
 import fs from "fs"
@@ -74,9 +75,9 @@ export async function postarImagem(req, res) {
 //EspeciePlanta
 export async function registrarEspecie(req, res) {
 
-    const {nome, descricao, cuidados, classificacao, rega} = req.body
-    
-    if(!nome || !descricao || cuidados|| !classificacao || !rega){
+    const { nome, descricao, cuidados, classificacao, rega } = req.body
+
+    if (!nome || !descricao || !cuidados || !classificacao || !rega) {
         throw criarErro("Todos os campos são obrigatórios")
     }
 
@@ -89,5 +90,26 @@ export async function registrarEspecie(req, res) {
     } catch (error) {
         throw criarErro("Erro ao tentar registrar a especie", 500)
     }
-    
+
+}
+
+//PlantaUsuario
+export async function registrarPlanta(req, res) {
+
+    const { especieId, nome, foto, plantio } = req.body
+    const userId = req.user.id
+
+    if (!especieId || !nome || !plantio) {
+        throw criarErro("Todos os campos são obrigatórios")
+    }
+
+    try {
+        const respostaRegistro = await PlantaUsuario.registrarPlanta(userId, especieId, nome, foto, plantio)
+
+        res.status(200).json(respostaRegistro)
+
+    } catch (error) {
+        console.error(error)
+        res.status(error.statusCode || 500).json({ erro: error.message })
+    }
 }
