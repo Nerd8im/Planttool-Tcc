@@ -3,10 +3,10 @@ import 'dotenv/config.js'
 // import path from "path"
 // import cors from "cors"
 import autenticarToken from "./src/middlewares/autenticarToken.js"
-import { login, postarImagem, registrarUsuario, registrarEspecie } from "./src/Controllers/post_controllers.js"
+import { login, postarImagem, registrarUsuario, registrarEspecie, analiseGemni } from "./src/Controllers/post_controllers.js"
 import { trocarFotoPerfil} from "./src/Controllers/put_controllers.js"
 import { uploadImagem } from "./src/middlewares/uploadImagem.js"
-import { pegarImagem, pegarImagemUsuario } from "./src/Controllers/get_controllers.js"
+import { pegarImagem, pegarImagemUsuario, buscarEspecies } from "./src/Controllers/get_controllers.js"
 
 const app = express()
 const porta = 3000
@@ -38,6 +38,10 @@ app.get(`${rota}/imagem/usuario/:image`, autenticarToken, pegarImagemUsuario)
 app.post(`${rota}/registrarEspecies`, registrarEspecie)
 
 app.get(`${rota}/especies`, autenticarToken, buscarEspecies)
+
+
+// rota gemini
+app.post(`${rota}/gemini`, autenticarToken, uploadPrivado, analiseGemni)
 
 app.listen(porta, () => {
     console.log(`Servidor rodando em http://localhost:${porta}/planttool/v1`)

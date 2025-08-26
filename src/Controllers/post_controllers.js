@@ -4,6 +4,7 @@ import { criarErro } from "../utils/erros.js"
 import sharp from "sharp"
 import fs from "fs"
 import path from "path"
+import geminiAPI from "../services/geminiAPI.js"
 
 export async function registrarUsuario(req, res) {
 
@@ -42,12 +43,14 @@ export async function login(req, res) {
 }
 
 export async function postarImagem(req, res) {
+    const id = req.usuario.user_id;
+
     if (!req.file) {
         throw criarErro("Imagem não enviada", 400);
     }
 
     const caminhoOriginal = req.file.path;
-    const caminhoFinal = path.join(path.dirname(caminhoOriginal), "foto-" + req.file.filename);
+    const caminhoFinal = path.join(path.dirname(caminhoOriginal), id.concat(path.extname(req.file.originalname)));
 
     try {
         const metadata = await sharp(caminhoOriginal).metadata();
@@ -90,4 +93,23 @@ export async function registrarEspecie(req, res) {
         throw criarErro("Erro ao tentar registrar a especie", 500)
     }
     
+}
+
+export async function analiseGemni(req, res) {
+    if (!req.file) {
+        throw criarErro("Imagem não enviada", 400);
+    }
+
+    const caminhoOriginal = req.file.path;
+    const caminhoFinal = path.join(path.dirname(caminhoOriginal), req.usuario.user_id + ".jpg");
+
+    const imageBuffer = fs.readFileSync(caminhoFinal);
+
+    try {
+        const descricao = await geminiAPI(imageBuffer);
+        return res.status(200).json({ descricao: descricao });
+    } catch (error) {
+        console.error("Erro ao gerar descrição com Gemini:", error);
+        return criarErro("Erro ao analisar imagem", 500);
+    }
 }

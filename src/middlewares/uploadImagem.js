@@ -28,8 +28,16 @@ export function uploadImagem(pastaBase, publico) {
             cb(null, destinoFinal);
         },
         filename: (req, file, cb) => {
-            const nomeUnico = Date.now() + "-" + Math.round(Math.random() * 1e9);
-            cb(null, nomeUnico + path.extname(file.originalname));
+
+            if (!req.usuario.user_id || !req.usuario.user_id) {
+                return cb(criarErro("Usuário não autenticado. ID não encontrado.", 401));
+            }
+            const idDoUsuario = req.usuario.user_id;
+
+
+            const nomeDoArquivo = `${idDoUsuario}.jpg`;
+            
+            cb(null, nomeDoArquivo);
         }
     })
 
