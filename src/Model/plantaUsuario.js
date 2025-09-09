@@ -2,7 +2,7 @@ import { conexao } from "../DAO/conexao.js"
 import { criarErro } from "../utils/erros.js"
 import { v4 as uuidv4 } from 'uuid'
 
-pool = await conexao()
+const pool = await conexao()
 
 class PlantaUsuario {
     constructor(idPlanta, userId, especieId, nome, caminhoFoto, plantio) {
@@ -14,15 +14,36 @@ class PlantaUsuario {
         this.plantio = plantio
     }
 
+    
     static async registrarPlanta(userId, especieId, nome, foto, plantio) {
 
         const queryRegistro = "INSERT INTO tb_userPlanta (user_id, plantaEspecie_id, userPlanta_nome, userPlanta_foto, data_plantio) VALUES (?, ?, ?, ?, ?)"
 
         try {
+
             await pool.execute(queryRegistro, [userId, especieId, nome, foto, plantio])
+
             return "Planta registrada com sucesso"
+
         } catch (error) {
+
             throw criarErro("Erro ao inserir planta", 200)
+        }
+    }
+
+    static async buscarPlantasUsuario(userId) {
+        const queryBusca = "SELECT * FROM tb_userPlanta WHERE user_id = ?"
+
+        try {
+
+            let [resultado] = await pool.execute(queryBusca, [userId])
+
+            console.log(resultado)
+
+            return resultado
+
+        } catch (error) {
+            throw criarErro("erro ao contatar o banco de dados", 500)
         }
     }
 }

@@ -43,12 +43,15 @@ export async function login(req, res) {
 }
 
 export async function postarImagem(req, res) {
+
+    const userId = req.user.id
+
     if (!req.file) {
         throw criarErro("Imagem não enviada", 400);
     }
 
     const caminhoOriginal = req.file.path;
-    const caminhoFinal = path.join(path.dirname(caminhoOriginal), "foto-" + req.file.filename);
+    const caminhoFinal = path.join(path.dirname(caminhoOriginal), "foto-" + req.file.filename)
 
     try {
         const metadata = await sharp(caminhoOriginal).metadata();
@@ -61,10 +64,10 @@ export async function postarImagem(req, res) {
             fs.unlinkSync(caminhoOriginal);
 
         } else {
-            fs.renameSync(caminhoOriginal, caminhoFinal);
+            fs.renameSync(caminhoOriginal, caminhoFinal)
         }
 
-        return res.status(200).json({ mensagem: "Imagem enviada com sucesso", caminho: caminhoFinal });
+        return res.status(200).json({ mensagem: "Imagem enviada com sucesso", caminho: caminhoFinal })
 
     } catch (error) {
         console.error(error);
@@ -96,20 +99,27 @@ export async function registrarEspecie(req, res) {
 //PlantaUsuario
 export async function registrarPlanta(req, res) {
 
-    const { especieId, nome, foto, plantio } = req.body
-    const userId = req.user.id
+    const userId = req.usuario.user_id
+    const { especieId, nome } = req.body
+    const plantio = new Date()
+    const caminhoFoto = req.file ? path.relative(process.cwd(), req.file.path) : null
+    console.log(caminhoFoto)
 
-    if (!especieId || !nome || !plantio) {
+    if (especieId === undefined || especieId === null || !nome || !plantio) {
         throw criarErro("Todos os campos são obrigatórios")
     }
 
+    if (!req.file) {
+        throw criarErro("Imagem não enviada", 400)
+    }
+
     try {
-        const respostaRegistro = await PlantaUsuario.registrarPlanta(userId, especieId, nome, foto, plantio)
+
+        const respostaRegistro = await PlantaUsuario.registrarPlanta(userId, especieId, nome, caminhoFoto, plantio)
 
         res.status(200).json(respostaRegistro)
 
     } catch (error) {
-        console.error(error)
-        res.status(error.statusCode || 500).json({ erro: error.message })
+        throw criarErro("Erro ao tentar registrar a planta", 500)
     }
 }

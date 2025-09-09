@@ -30,24 +30,57 @@ export async function pegarImagemUsuario(req, res) {
     const id = req.usuario.user_id;
     const { image } = req.params;
 
-
-
-    const caminho = path.resolve('uploads_privados', 'usuarios', image);
-
-    console.log(caminho);
-
-    if (image !== id.concat('.jpg')) {
+    if (!image.startsWith(id)) {
         throw criarErro("Imagem não corresponde ao usuário autenticado", 403);
-    } else if (!fs.existsSync(caminho)) {
-        throw criarErro("Imagem não encontrada", 404);
+    }
+
+    const formatos = [".jpg", ".png"]
+
+    let caminhoFinal = null
+
+    // Se o parametro já tem extensão, tenta direto
+    if (formatos.some(ext => image.endsWith(ext))) {
+        const caminho = path.resolve('uploads_privados', 'usuarios', image)
+        if (fs.existsSync(caminho)) {
+            caminhoFinal = caminho;
+        }
+    } else {
+        // Se não tem extensão busca por todas as possíveis
+        for (const ext of formatos) {
+            const caminho = path.resolve('uploads_privados', 'usuarios', `${image}${ext}`)
+            if (fs.existsSync(caminho)) {
+                caminhoFinal = caminho;
+                break;
+            }
+        }
+    }
+
+    if (!caminhoFinal) {
+        throw criarErro("Imagem não encontrada", 404)
     }
 
     try {
-        return res.status(200).sendFile(caminho);
+        return res.status(200).sendFile(caminhoFinal)
+    } catch (error) {
+        console.error(error);
+        res.status(error.statusCode || 500).json({ erro: error.message })
+    }
+}
+
+export async function buscarPlantasUsuario(req, res) {
+    const usuario = new Usuario(req.usuario.user_id, req.usuario.user_nome, req.usuario.user_email, req.usuario.user_senha)
+
+    try{
+        let plantasUsuario = await usuario.buscarPlantasUsuario()
+
+        if (plantasUsuario.length === 0) {
+            return res.status(200).json({ mensagem: "Nenhuma planta cadastrada" })
+        }
+
+        res.status(200).json(plantasUsuario)
     }
     catch (error) {
-        console.error(error);
-        res.status(error.statusCode || 500).json({ erro: error.message });
+        throw criarErro("Erro ao buscar", 500)
     }
 }
 

@@ -1,9 +1,10 @@
-CREATE DATABASE plantool_db;
+CREATE DATABASE IF NOT EXISTS plantool_db;
 USE plantool_db;
 
+
 CREATE TABLE tb_user(
-	user_id VARCHAR (60) PRIMARY KEY UNIQUE,
-	user_nome VARCHAR(244),
+    user_id VARCHAR (60) PRIMARY KEY UNIQUE,
+    user_nome VARCHAR(244),
     user_sobrenome VARCHAR(244),
     user_email VARCHAR(244) UNIQUE,
     user_senha VARCHAR(100),
@@ -16,9 +17,11 @@ CREATE TABLE tb_classificacao_botanica (
     classificacao_descricao TEXT
 );
 
+
 INSERT INTO tb_classificacao_botanica (classificacao_nome, classificacao_descricao) VALUES
 ('Angiospermas', 'Plantas com flores e sementes envoltas por frutos.'),
 ('Gimnospermas', 'Plantas com sementes nuas, sem frutos.');
+
 
 CREATE TABLE tb_plantaEspecie(
     plantaEspecie_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -31,9 +34,11 @@ CREATE TABLE tb_plantaEspecie(
     FOREIGN KEY (classificacao_id) REFERENCES tb_classificacao_botanica(classificacao_id)
 );
 
+
 INSERT INTO tb_plantaEspecie (plantaEspecie_nome, plantaEspecie_descricao, plantaEspecie_cuidados, plantaEspecie_foto, plantaEspecie_intervalo_rega_horas, classificacao_id) VALUES
-('Ficus lyrata', 'Também conhecida como figueira-lira, ótima para ambientes internos.', 'Requer luz indireta e regas moderadas.', 'publico\imagem_plantas\placeholder.jpg', 72, 1),
-('Pinus elliottii', 'Espécie de pinheiro comum no sul do Brasil.', 'Prefere solo arenoso e boa iluminação.', 'publico\imagem_plantas\placeholder.jpg', 168, 2);
+('Ficus lyrata', 'Também conhecida como figueira-lira, ótima para ambientes internos.', 'Requer luz indireta e regas moderadas.', 'publico\\imagem_plantas\\placeholder.jpg', 72, 1),
+('Pinus elliottii', 'Espécie de pinheiro comum no sul do Brasil.', 'Prefere solo arenoso e boa iluminação.', 'publico\\imagem_plantas\\placeholder.jpg', 168, 2);
+
 
 CREATE TABLE tb_guiaCuidado (
     guia_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -43,9 +48,11 @@ CREATE TABLE tb_guiaCuidado (
     FOREIGN KEY (plantaEspecie_id) REFERENCES tb_plantaEspecie(plantaEspecie_id)
 );
 
+
 INSERT INTO tb_guiaCuidado (plantaEspecie_id, titulo, conteudo) VALUES
 (1, 'Cuidados com Ficus lyrata', 'Regue duas vezes por semana e mantenha próximo a janelas.'),
 (2, 'Guia para Pinus elliottii', 'Evite solo encharcado. Adube a cada 3 meses.');
+
 
 CREATE TABLE tb_userPlanta (
     userPlanta_id VARCHAR(60) PRIMARY KEY,
@@ -54,7 +61,7 @@ CREATE TABLE tb_userPlanta (
     userPlanta_nome VARCHAR(244),
     userPlanta_foto varchar(244),
     data_plantio DATE,
-    FOREIGN KEY (user_id) REFERENCES tb_user(user_id),
+    FOREIGN KEY (user_id) REFERENCES tb_user(user_id) ON DELETE CASCADE,
     FOREIGN KEY (plantaEspecie_id) REFERENCES tb_plantaEspecie(plantaEspecie_id)
 );
 
@@ -81,6 +88,7 @@ CREATE TABLE tb_calculoNutriente (
 
 -- CONSULTAS (JOINS) --
 
+-- Consulta 1: Usuários e suas plantas
 SELECT 
     u.user_nome,
     u.user_sobrenome,
@@ -90,6 +98,7 @@ SELECT
 FROM tb_user u
 INNER JOIN tb_userPlanta p ON u.user_id = p.user_id;
 
+-- Consulta 2: Plantas do usuário e detalhes da espécie
 SELECT 
     up.userPlanta_nome,
     up.data_plantio,
@@ -98,6 +107,7 @@ SELECT
 FROM tb_userPlanta up
 INNER JOIN tb_plantaEspecie pe ON up.plantaEspecie_id = pe.plantaEspecie_id;
 
+-- Consulta 3: Espécies de plantas e sua classificação botânica
 SELECT 
     pe.plantaEspecie_nome,
     pe.plantaEspecie_descricao,
@@ -106,6 +116,7 @@ SELECT
 FROM tb_plantaEspecie pe
 INNER JOIN tb_classificacao_botanica cb ON pe.classificacao_id = cb.classificacao_id;
 
+-- Consulta 4: Junção completa de usuário, planta do usuário, espécie e classificação
 SELECT 
     u.user_nome,
     u.user_sobrenome,
