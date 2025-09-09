@@ -121,6 +121,7 @@ export async function registrarPlanta(req, res) {
         res.status(200).json(respostaRegistro)
 
     } catch (error) {
-        throw criarErro("Erro ao tentar registrar a planta", 500)
+        console.error("Erro ao gerar descrição com Gemini:", error);
+        return criarErro("Erro ao analisar imagem", 500);
     }
 }
