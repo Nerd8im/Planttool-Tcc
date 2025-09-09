@@ -3,54 +3,45 @@ import path from "path";
 import fs from "fs";
 import { criarErro } from "../utils/erros.js";
 
-/*Seguinte, crie mais um middleware pra facilitar upar as imagens, é simples (de ver pq criar foi foda), basta passar como parametro o nome
-a pasta que você quer usar (string), e caso não exista ele cria uma com esse nome, e se ela é publica (booleano)*/
+/**
+ * Middleware de upload de imagens que organiza os arquivos em pastas por usuário.
+ * Cada usuário terá uma pasta baseada no ID, e dentro dela, subpastas para
+ * cada tipo de upload (ex: 'foto_perfil', 'plantas').
+ * * IMPORTANTE: O middleware de autenticação (autenticarToken) deve ser executado ANTES desse.
+ * @param {string} subpasta - O nome da subpasta onde a imagem será salva (ex: 'foto_perfil').
+ * @param {boolean} publico - Define se o upload será na pasta publica ou privada.
+ */
+export function uploadImagem( subpasta, publico) {
 
-export function uploadImagem(pastaBase, publico) {
-
-    let destinoFinal = ""
-
-    //aqui ela verifica se é publico ou privado e altera o destino para as pastas certas
-    if (publico === true) {
-        destinoFinal = path.join("uploads_publicos", pastaBase)
-    } else {
-        destinoFinal = path.join("uploads_privados", pastaBase)
-    }
-
-    //e aqui usei o fs pra verificar se ela existe, caso não exista ele cria uma para evitar erros (e poupar minha sanidade)
-    if (!fs.existsSync(destinoFinal)) {
-        fs.mkdirSync(destinoFinal, { recursive: true })
-    }
-
-    //configurei o multer para salvar os arquivos no servidor inves do db, tu tinha razão, é bem melhor
     const armazenamentoLocal = multer.diskStorage({
         destination: (req, file, cb) => {
+            // Corrigido para usar req.usuario conforme autenticarToken.js
+            if (!req.usuario || !(req.usuario.id || req.usuario.user_id)) {
+                return cb(criarErro("Usuário não autenticado para fazer upload.", 401))
+            }
+
+            const userId = req.usuario.id || req.usuario.user_id;
+            const tipoPasta = publico ? "uploads_publicos" : "uploads_privados";
+            const destinoFinal = path.join(tipoPasta, userId, subpasta);
+            fs.mkdirSync(destinoFinal, { recursive: true });
             cb(null, destinoFinal);
         },
         filename: (req, file, cb) => {
-
-            if (!req.usuario.user_id || !req.usuario.user_id) {
-                return cb(criarErro("Usuário não autenticado. ID não encontrado.", 401));
-            }
-            const idDoUsuario = req.usuario.user_id;
-
-
-            const nomeDoArquivo = `${idDoUsuario}.jpg`;
-            
-            cb(null, nomeDoArquivo);
+            // Cria um nome de arquivo único para evitar conflitos
+            const nomeUnico = Date.now() + "-" + Math.round(Math.random() * 1e9)
+            cb(null, nomeUnico + path.extname(file.originalname))
         }
-    })
+    });
 
-    //e ele devolve as configurações finais com o armazenamento pronto
     return multer({
         storage: armazenamentoLocal,
-        limits: { fileSize: 2 * 1024 * 1024 }, // 2mb <- eram 2 ou 5? qualquer coisa muda aí
+        limits: { fileSize: 2 * 1024 * 1024 }, // Limite de 2MB
         fileFilter: (req, file, cb) => {
             const formatos = ["image/jpeg", "image/png"];
             if (!formatos.includes(file.mimetype)) {
-                return cb(criarErro("Apenas imagens JPEG e PNG são permitidas", 415));
+                return cb(criarErro("Apenas imagens JPEG e PNG são permitidas", 415))
             }
-            cb(null, true)
+            cb(null, true);
         }
-    })
+    });
 }

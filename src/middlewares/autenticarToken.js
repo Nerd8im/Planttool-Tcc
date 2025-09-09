@@ -6,14 +6,14 @@ export default async function autenticarToken(req, res, next) {
 
   const token = headerAut && headerAut.split(' ')[1];
 
-  if (!token) return res.status(403).json({ erro: 'Token não fornecido' });
+  if (!token) return res.status(403).json({ erro: 'Token não fornecido' })
 
   jwt.verify(token, chaveSecreta, (err, decoded) => {
     if (err) return res.status(401).json({ 
       erro: 'Token inválido',
-      detalhes: 'Requisição não autorizada'});
+      detalhes: 'Requisição não autorizada'})
   
-    req.usuario = decoded;
+    req.usuario = decoded
     next()
   })
 }

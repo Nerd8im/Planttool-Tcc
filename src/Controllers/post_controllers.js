@@ -1,5 +1,6 @@
 import Usuario from "../Model/usuario.js"
 import EspeciePlanta from "../Model/plantaEspecie.js"
+import PlantaUsuario from "../Model/plantaUsuario.js"
 import { criarErro } from "../utils/erros.js"
 import sharp from "sharp"
 import fs from "fs"
@@ -43,14 +44,15 @@ export async function login(req, res) {
 }
 
 export async function postarImagem(req, res) {
-    const id = req.usuario.user_id;
+
+    const userId = req.user.id
 
     if (!req.file) {
         throw criarErro("Imagem não enviada", 400);
     }
 
     const caminhoOriginal = req.file.path;
-    const caminhoFinal = path.join(path.dirname(caminhoOriginal), id.concat(path.extname(req.file.originalname)));
+    const caminhoFinal = path.join(path.dirname(caminhoOriginal), "foto-" + req.file.filename)
 
     try {
         const metadata = await sharp(caminhoOriginal).metadata();
@@ -63,10 +65,10 @@ export async function postarImagem(req, res) {
             fs.unlinkSync(caminhoOriginal);
 
         } else {
-            fs.renameSync(caminhoOriginal, caminhoFinal);
+            fs.renameSync(caminhoOriginal, caminhoFinal)
         }
 
-        return res.status(200).json({ mensagem: "Imagem enviada com sucesso", caminho: caminhoFinal });
+        return res.status(200).json({ mensagem: "Imagem enviada com sucesso", caminho: caminhoFinal })
 
     } catch (error) {
         console.error(error);
@@ -77,9 +79,9 @@ export async function postarImagem(req, res) {
 //EspeciePlanta
 export async function registrarEspecie(req, res) {
 
-    const {nome, descricao, cuidados, classificacao, rega} = req.body
-    
-    if(!nome || !descricao || cuidados|| !classificacao || !rega){
+    const { nome, descricao, cuidados, classificacao, rega } = req.body
+
+    if (!nome || !descricao || !cuidados || !classificacao || !rega) {
         throw criarErro("Todos os campos são obrigatórios")
     }
 
@@ -111,5 +113,34 @@ export async function analiseGemni(req, res) {
     } catch (error) {
         console.error("Erro ao gerar descrição com Gemini:", error);
         return criarErro("Erro ao analisar imagem", 500);
+
+    }
+}
+
+//PlantaUsuario
+export async function registrarPlanta(req, res) {
+
+    const userId = req.usuario.user_id
+    const { especieId, nome } = req.body
+    const plantio = new Date()
+    const caminhoFoto = req.file ? path.relative(process.cwd(), req.file.path) : null
+    console.log(caminhoFoto)
+
+    if (especieId === undefined || especieId === null || !nome || !plantio) {
+        throw criarErro("Todos os campos são obrigatórios")
+    }
+
+    if (!req.file) {
+        throw criarErro("Imagem não enviada", 400)
+    }
+
+    try {
+
+        const respostaRegistro = await PlantaUsuario.registrarPlanta(userId, especieId, nome, caminhoFoto, plantio)
+
+        res.status(200).json(respostaRegistro)
+
+    } catch (error) {
+        throw criarErro("Erro ao tentar registrar a planta", 500)
     }
 }
