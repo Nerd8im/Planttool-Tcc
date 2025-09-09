@@ -50,69 +50,97 @@ class Usuario {
                 mensagem: "Usuário registrado com sucesso",
                 usuario: { nome, sobrenome }
             }
-                
 
-        } catch(error) {
-        throw criarErro("Erro ao registrar usuário", 500)
+
+        } catch (error) {
+            throw criarErro("Erro ao registrar usuário", 500)
+        }
+
     }
-
-}
 
     static async autenticar(email, senha) {
 
-    if (!email || !senha) {
-        throw criarErro("Email e senha são obrigatorios", 400)
+        if (!email || !senha) {
+            throw criarErro("Email e senha são obrigatorios", 400)
+        }
+
+        const querySenha = 'SELECT user_senha FROM tb_user WHERE user_email = ?'
+        const queryBuscarUser = 'SELECT user_id, user_nome, user_sobrenome, user_email, user_foto FROM tb_user WHERE user_email = ?'
+
+        try {
+
+            const [senhaReal] = await pool.execute(querySenha, [email])
+
+            console.log(senhaReal)
+
+            if (senhaReal.length === 0) {
+                throw criarErro("Úsuario não encontrado", 404)
+            }
+
+            if (await bcrypt.compare(senha, senhaReal[0].user_senha) == true) {
+
+                const [dadosUsuarioDb] = await pool.execute(queryBuscarUser, [email])
+                const tokenUsuario = jwt.sign(dadosUsuarioDb[0], chaveSecreta, { expiresIn: "3h" })
+                const dadosUsuario = dadosUsuarioDb[0]
+
+                return { tokenUsuario, dadosUsuario }
+
+            } else {
+                throw criarErro("senha incorreta", 401)
+            }
+
+        } catch (error) {
+
+            if (error.statusCode) {
+                throw error
+            }
+
+            throw criarErro("erro ao autenticar", 500)
+        }
+
     }
-
-    const querySenha = 'SELECT user_senha FROM tb_user WHERE user_email = ?'
-    const queryBuscarUser = 'SELECT user_id, user_nome, user_sobrenome, user_email, user_foto FROM tb_user WHERE user_email = ?'
-
-    try {
-
-        const [senhaReal] = await pool.execute(querySenha, [email])
-
-        console.log(senhaReal)
-
-        if (senhaReal.length === 0) {
-            throw criarErro("Úsuario não encontrado", 404)
-        }
-
-        if (await bcrypt.compare(senha, senhaReal[0].user_senha) == true) {
-
-            const [dadosUsuarioDb] = await pool.execute(queryBuscarUser, [email])
-            const tokenUsuario = jwt.sign(dadosUsuarioDb[0], chaveSecreta, { expiresIn: "3h" })
-            const dadosUsuario = dadosUsuarioDb[0]
-
-            return { tokenUsuario, dadosUsuario }
-
-        } else {
-            throw criarErro("senha incorreta", 401)
-        }
-
-    } catch (error) {
-
-        if (error.statusCode) {
-            throw error
-        }
-
-        throw criarErro("erro ao autenticar", 500)
-    }
-
-}
 
     async atualizarFoto(caminhoImagem) {
-    const query = `UPDATE tb_user SET user_foto = ? WHERE user_id = ?`
+        const query = `UPDATE tb_user SET user_foto = ? WHERE user_id = ?`
 
-    try {
-        const [respostaDb] = await pool.execute(query, [caminhoImagem, this.id])
+        try {
+            const [respostaDb] = await pool.execute(query, [caminhoImagem, this.id])
 
-        console.log(respostaDb)
-    } catch (error) {
-        console.log(error)
-        throw criarErro("Erro ao atualizar foto de perfil", 500)
+            console.log(respostaDb)
+        } catch (error) {
+            console.log(error)
+            throw criarErro("Erro ao atualizar foto de perfil", 500)
+        }
+
     }
 
-}
+    async buscarPlantasUsuario() {
+        const query = `SELECT * FROM tb_userPlanta WHERE user_id = ?`
+
+        try {
+            const [respostaDb] = await pool.execute(query, [this.id])
+
+            return respostaDb[0]
+        } catch (error) {
+            console.log(error)
+            throw criarErro("Erro ao buscar plantas do usuário", 500)
+        }
+
+    }
+
+    async deletarUsuario() {
+        const query = `DELETE FROM tb_user WHERE user_id = ?`
+
+        try {
+            const [respostaDb] = await pool.execute(query, [this.id])
+
+            console.log(respostaDb)
+        } catch (error) {
+            console.log(error)
+            throw criarErro("Erro ao deletar usuário", 500)
+        }
+
+    }
 
 }
 
