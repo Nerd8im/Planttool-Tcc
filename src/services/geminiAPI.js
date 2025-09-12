@@ -5,8 +5,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export default async function geminiAPI(imageBuffer) {
-    const prompt =
-        "Faça uma análise, não tão objetiva e não muito longa, sendo mais natural, dessa planta e me de o nome dela (caso não consiga encontar o nome, NÃO FAÇA a análise e NEM TENTE chutar um nome). Caso nem seja uma planta, avise e pare análise. Veja  também se ela apresenta algum problema e dicas de como cuidar";
+    const prompt =  "Analise a planta mostrada na foto de forma natural, em um texto não excessivamente técnico. Identifique o nome da planta (apenas se tiver certeza; se não for possível identificar, não faça análise e não tente adivinhar). Caso a imagem não seja de uma planta, apenas informe isso e pare a resposta. Se identificar a planta, descreva brevemente suas características de forma leve e natural. Indique possíveis sinais de problemas visíveis (pragas, folhas amareladas, ressecamento etc.). Dê dicas simples de cuidados para mantê-la saudável.";
 
     try {
         const image = {

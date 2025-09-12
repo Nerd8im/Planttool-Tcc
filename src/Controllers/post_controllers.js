@@ -125,3 +125,23 @@ export async function registrarPlanta(req, res) {
         return criarErro("Erro ao analisar imagem", 500);
     }
 }
+
+export async function analiseGemni(req, res) {
+    if (!req.file) {
+        throw criarErro("Imagem não enviada", 400);
+    }
+
+    const caminhoOriginal = req.file.path;
+    const caminhoFinal = path.relative(process.cwd(), req.file.path);
+
+    const imageBuffer = fs.readFileSync(caminhoFinal);
+
+    try {
+        const descricao = await geminiAPI(imageBuffer);
+        return res.status(200).json({ descricao: descricao });
+    } catch (error) {
+        console.error("Erro ao gerar descrição com Gemini:", error);
+        return criarErro("Erro ao analisar imagem", 500);
+
+    }
+}

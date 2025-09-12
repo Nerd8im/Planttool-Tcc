@@ -11,8 +11,11 @@ lerna-debug.log*
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Pastas a ignorar
-uploads_publicos/usuario
-uploads_privados/usuario
+uploads_publicos/*
+!uploads_publicos/.gitkeep
+
+uploads_privados/*
+!uploads_privados/.gitkeep
 
 # Runtime data
 pids
