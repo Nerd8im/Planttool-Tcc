@@ -15,7 +15,7 @@ const rota = '/planttool/v1'
 
 const uploadFotoPerfil = uploadImagem("foto_perfil", false).single("foto");
 const uploadFotoPlanta = uploadImagem("plantas", false).single("foto");
-const uploadImagemPublica = uploadImagem("imagens_publicas", true).single("foto");
+const uploadImagemPublica = uploadImagem("imagens_publicas", false).single("foto");
 const uploadImagemPrivada = uploadImagem("imagens_privadas", false).single("foto");
 
 app.use(express.json())
@@ -36,7 +36,7 @@ app.put(`${rota}/trocarFotoPerfil`, autenticarToken, uploadFotoPerfil, trocarFot
 // --- Rotas de imagens ---
 app.get(`${rota}/imagem/:image`, pegarImagem)
 
-app.get(`${rota}/imagem/usuario/:image`, autenticarToken, pegarImagemUsuario)
+app.get(`${rota}/imagem/usuario/fotoperfil`, autenticarToken, pegarImagemUsuario)
 
 // --- Rotas para especie de plantas ---
 app.post(`${rota}/registrarEspecie`, registrarEspecie)
