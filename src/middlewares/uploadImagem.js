@@ -13,6 +13,7 @@ import { criarErro } from "../utils/erros.js";
  */
 export function uploadImagem( subpasta, publico) {
 
+
     const armazenamentoLocal = multer.diskStorage({
         destination: (req, file, cb) => {
             // Corrigido para usar req.usuario conforme autenticarToken.js

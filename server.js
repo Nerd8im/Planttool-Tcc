@@ -13,10 +13,10 @@ const rota = '/planttool/v1'
 
 // --- Middlewares de Upload específicos para cada rota ---
 
-const uploadFotoPerfil = uploadImagem("foto_perfil", false).single("foto");
-const uploadFotoPlanta = uploadImagem("plantas", false).single("foto");
-const uploadImagemPublica = uploadImagem("imagens_publicas", false).single("foto");
-const uploadImagemPrivada = uploadImagem("imagens_privadas", false).single("foto");
+const uploadFotoPerfil = uploadImagem("foto_perfil", false).single("foto")
+const uploadFotoPlanta = uploadImagem("plantas", false).single("foto")
+const uploadImagemPublica = uploadImagem("imagens_publicas", false).single("foto")
+const uploadImagemPrivada = uploadImagem("imagens_privadas", false).single("foto")
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
