@@ -26,7 +26,7 @@ export async function pegarImagem(req, res) {
 }
 
 export async function pegarImagemUsuario(req, res) {
-    const id = req.usuario.user_id
+    const id = req.params.id
 
     const formatos = [".jpg", ".png"]
 

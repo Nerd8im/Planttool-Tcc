@@ -6,19 +6,19 @@ import sharp from "sharp"
 import fs from "fs"
 import path from "path"
 import geminiAPI from "../services/geminiAPI.js"
+import { trocarFotoPerfil } from "./put_controllers.js"
 
 export async function registrarUsuario(req, res) {
 
     const { nome, sobrenome, email, senha } = req.body
 
     try {
-        const resposta = await Usuario.registrar(nome, sobrenome, email, senha)
-
+        const resposta = await Usuario.registrar(nome, sobrenome, email, senha, fotoPerfil)
         res.status(200).json(resposta)
 
     } catch (error) {
         console.error(error)
-        res.status(error.statusCode || 500).json({ erro: error.message })
+        res.status(error.statusCode || 500).json({ erro: error.message})
     }
 
 }

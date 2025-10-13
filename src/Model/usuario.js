@@ -33,7 +33,8 @@ class Usuario {
         }
 
         const id = uuidv4()
-        const queryRegistro = "INSERT INTO tb_user(user_id, user_nome, user_sobrenome, user_email, user_senha) VALUES (?, ?, ?, ?, ?)"
+        const queryRegistro = "INSERT INTO tb_user(user_id, user_nome, user_sobrenome, user_email, user_senha VALUES (?, ?, ?, ?, ?,)"
+        
 
         try {
             const senhaHash = await bcrypt.hash(senha, salt)
@@ -44,6 +45,7 @@ class Usuario {
                 sobrenome,
                 email,
                 senhaHash,
+                fotoPerfil
             ])
 
             return {
