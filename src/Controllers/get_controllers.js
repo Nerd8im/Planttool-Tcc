@@ -84,8 +84,10 @@ export async function buscarEspecies(req, res) {
 
         res.status(200).json(ListaEspecies)
     } catch (error) {
+        console.log(error)
         throw criarErro("Erro ao buscar", 500)
     }
+
 
 
 }
