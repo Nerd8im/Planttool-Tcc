@@ -21,7 +21,7 @@ class Usuario {
 
         const salt = 12
 
-        if (!nome, !sobrenome, !email, !senha) {
+        if (!nome || !sobrenome || !email || !senha) {
             throw criarErro("Todos os campos são obrigatórios", 400)
         }
 
@@ -45,7 +45,6 @@ class Usuario {
                 sobrenome,
                 email,
                 senhaHash,
-                fotoPerfil
             ])
 
             return {
