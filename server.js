@@ -5,7 +5,7 @@ import autenticarToken from "./src/middlewares/autenticarToken.js"
 import { login, postarImagem, registrarUsuario, registrarEspecie, registrarPlanta, analiseGemni } from "./src/Controllers/post_controllers.js"
 import { trocarFotoPerfil} from "./src/Controllers/put_controllers.js"
 import { uploadImagem } from "./src/middlewares/uploadImagem.js"
-import { pegarImagem, pegarImagemUsuario, buscarEspecies, buscarPlantasUsuario} from "./src/Controllers/get_controllers.js"
+import { pegarImagem, buscarPlantaId, pegarImagemUsuario, buscarEspecies, buscarPlantasUsuario} from "./src/Controllers/get_controllers.js"
 
 const app = express()
 const porta = 3000
@@ -53,6 +53,7 @@ app.post(`${rota}/registrarPlanta`, autenticarToken, uploadFotoPlanta, registrar
 
 app.get(`${rota}/buscarPlantasUsuario`, autenticarToken, buscarPlantasUsuario)
 
+app.get(`${rota}/plantaUsuario/:id`, autenticarToken, buscarPlantaId)
 
 // rota gemini
 app.post(`${rota}/gemini`, autenticarToken, uploadImagemPrivada, analiseGemni)

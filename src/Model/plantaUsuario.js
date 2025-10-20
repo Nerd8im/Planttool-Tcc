@@ -46,6 +46,25 @@ class PlantaUsuario {
             throw criarErro("erro ao contatar o banco de dados", 500)
         }
     }
+
+    static async buscarPlantaId(userId, idPlanta) {
+        const queryBusca = "SELECT * FROM tb_userPlanta WHERE user_id = ? AND userPlanta_id = ?"
+
+        try {
+
+            let [resultado] = await pool.execute(queryBusca, [userId, idPlanta])
+
+            if (resultado.length === 0) {
+                throw criarErro("Planta não encontrada", 404)
+            }
+
+            return resultado[0]
+
+        } catch (error) {
+            console.log(error)
+            throw criarErro("erro ao contatar o banco de dados", 500)
+        }
+    }
 }
 
 export default PlantaUsuario

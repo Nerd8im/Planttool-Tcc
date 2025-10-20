@@ -54,6 +54,8 @@ export async function pegarImagemUsuario(req, res) {
     }
 }
 
+// Plantas do Usuário
+
 export async function buscarPlantasUsuario(req, res) {
     const usuario = new Usuario(req.usuario.user_id, req.usuario.user_nome, req.usuario.user_email, req.usuario.user_senha)
 
@@ -69,6 +71,30 @@ export async function buscarPlantasUsuario(req, res) {
     catch (error) {
         throw criarErro("Erro ao buscar", 500)
     }
+}
+
+export async function buscarPlantaId(req, res) {
+
+    const idPlanta = req.params.id
+    const usuario = new Usuario(req.usuario.user_id, req.usuario.user_nome, req.usuario.user_email, req.usuario.user_senha)     
+
+    if(!idPlanta){
+        return res.status(400).json({ erro: "ID da planta não fornecido" })
+    }
+
+    try {
+        const planta = await usuario.buscarPlantaId(idPlanta)
+
+        res.status(200).json(planta)
+
+    } catch (error) {
+
+        res.status(error.statusCode || 500).json({ erro: error.message })
+
+        throw criarErro("Erro ao buscar planta", 500)    
+    }
+
+
 }
 
 //Especies de Plantas
