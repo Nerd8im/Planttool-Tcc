@@ -10,24 +10,33 @@ class PlantaUsuario {
         this.userId = userId
         this.especieId = especieId
         this.nome = nome
-        this.caminhoFoto = caminhoFoto || "publico\\imagem_plantas\\placeholder.jpg"
+        this.caminhoFoto = caminhoFoto
         this.plantio = plantio
     }
 
-    
-    static async registrarPlanta(userId, especieId, nome, foto, plantio) {
 
-        const queryRegistro = "INSERT INTO tb_userPlanta (user_id, plantaEspecie_id, userPlanta_nome, userPlanta_foto, data_plantio) VALUES (?, ?, ?, ?, ?)"
+    static async registrarPlanta(userId, especieId, nome, foto, plantio) {
+        const userPlantaId = uuidv4(); // Gera um UUID para o campo userPlanta_id
+        const queryRegistro = `
+            INSERT INTO tb_userPlanta 
+            (userPlanta_id, user_id, plantaEspecie_id, userPlanta_nome, userPlanta_foto, data_plantio) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
 
         try {
+            const [result] = await pool.execute(queryRegistro, [userPlantaId, userId, especieId, nome, foto, plantio]);
 
-            await pool.execute(queryRegistro, [userId, especieId, nome, foto, plantio])
+            if (result.affectedRows === 0) {
+                throw criarErro("Erro ao inserir planta no banco de dados", 500);
+            }
 
-            return "Planta registrada com sucesso"
-
+            return {
+                mensagem: "Planta registrada com sucesso",
+                plantaId: userPlantaId,
+            };
         } catch (error) {
-
-            throw criarErro("Erro ao inserir planta", 200)
+            console.error("Erro ao registrar planta no banco de dados:", error);
+            throw criarErro("Erro ao inserir planta", 500);
         }
     }
 

@@ -25,6 +25,17 @@ class Usuario {
             throw criarErro("Todos os campos são obrigatórios", 400)
         }
 
+        //Isso serve para verificar a estrutura do email, garantindo que ele tenha um arroba e ponto final
+        let emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        //.test serve para verificar se tem ou não os caracteres na string e devolve em verdadeiro ou falso
+        emailValido.test(email)
+
+        if (!emailValido.test(email)) {
+            console.log(email)
+            throw criarErro("Formato do Email inválido")
+        }
+
+
         const queryVerifica = "SELECT user_id FROM tb_user WHERE user_email = ?"
         const [resultadoVerificacao] = await pool.execute(queryVerifica, [email])
 
@@ -33,8 +44,8 @@ class Usuario {
         }
 
         const id = uuidv4()
-        const queryRegistro = "INSERT INTO tb_user(user_id, user_nome, user_sobrenome, user_email, user_senha VALUES (?, ?, ?, ?, ?,)"
-        
+        const queryRegistro = "INSERT INTO tb_user(user_id, user_nome, user_sobrenome, user_email, user_senha) VALUES (?, ?, ?, ?, ?)"
+
 
         try {
             const senhaHash = await bcrypt.hash(senha, salt)
@@ -44,7 +55,7 @@ class Usuario {
                 nome,
                 sobrenome,
                 email,
-                senhaHash,
+                senhaHash
             ])
 
             return {
@@ -54,7 +65,7 @@ class Usuario {
 
 
         } catch (error) {
-            throw criarErro("Erro ao registrar usuário", 500)
+            throw error
         }
 
     }
@@ -64,6 +75,7 @@ class Usuario {
         if (!email || !senha) {
             throw criarErro("Email e senha são obrigatorios", 400)
         }
+
 
         const querySenha = 'SELECT user_senha FROM tb_user WHERE user_email = ?'
         const queryBuscarUser = 'SELECT user_id, user_nome, user_sobrenome, user_email, user_foto FROM tb_user WHERE user_email = ?'

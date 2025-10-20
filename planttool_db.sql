@@ -1,7 +1,6 @@
 CREATE DATABASE IF NOT EXISTS plantool_db;
 USE plantool_db;
 
-
 CREATE TABLE tb_user(
     user_id VARCHAR (60) PRIMARY KEY UNIQUE,
     user_nome VARCHAR(244),
