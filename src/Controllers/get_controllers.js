@@ -83,16 +83,13 @@ export async function buscarPlantasUsuario(req, res) {
     }
 }
 
+// A principal diferença é que aqui vem a planta especifica do usuário com detalhes
 export async function buscarPlantaId(req, res) {
     const idPlanta = req.params.id
     const userId = req.usuario?.user_id
 
     if (!idPlanta) {
         return res.status(400).json({ erro: "ID da planta não fornecido" })
-    }
-
-    if (!userId) {
-        return res.status(401).json({ erro: "Usuário não autenticado" })
     }
 
     try {

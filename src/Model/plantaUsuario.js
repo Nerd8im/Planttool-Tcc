@@ -12,6 +12,7 @@ class PlantaUsuario {
         this.nome = nome
         this.caminhoFoto = caminhoFoto
         this.plantio = plantio
+        this.rega = null
     }
 
 
@@ -73,6 +74,9 @@ class PlantaUsuario {
             console.log(error)
             throw criarErro("erro ao contatar o banco de dados", 500)
         }
+    }
+    async calcularRega(req, res) {
+        
     }
 }
 

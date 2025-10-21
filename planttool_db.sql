@@ -64,6 +64,8 @@ CREATE TABLE tb_userPlanta (
     FOREIGN KEY (plantaEspecie_id) REFERENCES tb_plantaEspecie(plantaEspecie_id)
 );
 
+ALTER TABLE tb_userPlanta
+ADD COLUMN ultimaRega DATE
 
 CREATE TABLE tb_cuidadoNotificacao (
     notificacao_id VARCHAR(60) PRIMARY KEY,
