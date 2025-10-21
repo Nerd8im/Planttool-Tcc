@@ -85,49 +85,83 @@ export async function buscarPlantasUsuario(req, res) {
 
 export async function buscarPlantaId(req, res) {
     const idPlanta = req.params.id
-    const userId = req.usuario.user_id
+    const userId = req.usuario?.user_id
 
     if (!idPlanta) {
         return res.status(400).json({ erro: "ID da planta não fornecido" })
     }
 
+    if (!userId) {
+        return res.status(401).json({ erro: "Usuário não autenticado" })
+    }
+
     try {
-        const planta = await PlantaUsuario.buscarPlantaId(userId, idPlanta);
+        const planta = await PlantaUsuario.buscarPlantaId(userId, idPlanta)
+        console.log("Planta encontrada:", planta)
 
         if (!planta) {
             return res.status(404).json({ erro: "Planta não encontrada" })
         }
 
-        const formatos = [".jpg", ".png"];
-        let caminhoImagem = null;
+        let caminhoImagemParaRetorno = null
 
-        for (const ext of formatos) {
-            const caminho = path.resolve(
-                "uploads_privados",
-                req.usuario.user_id,
-                "plantas",
-                `${idPlanta}${ext}`
-            )
-            if (fs.existsSync(caminho)) {
-                caminhoImagem = caminho;
-                break
+        if (planta.userPlanta_foto) {
+
+            const caminhoAbsoluto = path.resolve(process.cwd(), planta.userPlanta_foto);
+
+            if (fs.existsSync(caminhoAbsoluto)) {
+                caminhoImagemParaRetorno = planta.userPlanta_foto;
+            } else {
+                console.warn(`Aviso: Arquivo de imagem não encontrado no disco, embora esteja referenciado no DB: ${caminhoAbsoluto}`);
+                caminhoImagemParaRetorno = null
             }
         }
 
-        // Adiciona o caminho da imagem ao objeto da planta
         const plantaComImagem = {
             ...planta,
-            imagem: caminhoImagem ? caminhoImagem : null, 
+            userPlanta_foto: caminhoImagemParaRetorno
         };
 
-        res.status(200).json(plantaComImagem);
+        return res.status(200).json(plantaComImagem)
+
     } catch (error) {
-        console.error("Erro ao buscar planta:", error);
-        res.status(500).json({ erro: "Erro ao buscar planta" })
+        console.error("Erro ao buscar planta:", error)
+        return res.status(500).json({ erro: "Erro ao buscar planta" })
     }
 }
-// Especies de Plantas
 
+export async function pegarImagemPlanta(req, res) {
+    req.idPlanta = req.params.id
+    req.idUsuario = req.usuario?.user_id
+
+    if (!req.idPlanta) {
+        return res.status(400).json({ erro: "ID da planta não fornecido" })
+    }
+
+    try {
+        let planta = await PlantaUsuario.buscarPlantaId(req.idUsuario, req.idPlanta)
+        console.log(planta)
+        if (!planta) {
+            return res.status(404).json({ erro: "Planta não encontrada" })
+        }
+
+        const caminhoAbsoluto = path.resolve(process.cwd(), planta.userPlanta_foto)
+
+        if (!fs.existsSync(caminhoAbsoluto)) {
+            return res.status(404).json({ erro: "Arquivo de imagem não encontrado no servidor" })
+        }
+
+        return res.status(200).sendFile(caminhoAbsoluto)
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ erro: "Erro ao buscar planta" })
+    }
+
+
+}
+
+// Especies de Plantas
 export async function buscarEspecies(req, res) {
 
     try {

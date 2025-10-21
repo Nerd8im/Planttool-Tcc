@@ -108,6 +108,8 @@ class Usuario {
                 throw error
             }
 
+            console.log(error)
+            
             throw criarErro("erro ao autenticar", 500)
         }
 

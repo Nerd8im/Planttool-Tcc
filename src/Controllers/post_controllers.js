@@ -5,6 +5,7 @@ import { criarErro } from "../utils/erros.js"
 import sharp from "sharp"
 import fs from "fs"
 import path from "path"
+import { v4 as uuidv4 } from 'uuid'
 import geminiAPI from "../services/geminiAPI.js"
 import { trocarFotoPerfil } from "./put_controllers.js"
 
@@ -98,36 +99,49 @@ export async function registrarEspecie(req, res) {
 }
 
 //PlantaUsuario
-export async function registrarPlanta(req, res) {
-    const userId = req.usuario.user_id;
-    const { especieId, nome } = req.body;
-    const plantio = new Date();
-    const caminhoFoto = req.file ? path.relative(process.cwd(), req.file.path) : null
+    export async function registrarPlanta(req, res) {
+        const userId = req.usuario.user_id
+        const { especieId, nome } = req.body
+        const plantio = new Date()
 
-    if (!especieId || !nome) {
-        return res.status(400).json({ erro: "Todos os campos são obrigatórios" })
+        if (!especieId || !nome) {
+            return res.status(400).json({ erro: "Todos os campos são obrigatórios" })
+        }
+
+        try {
+
+            const plantaId = uuidv4()
+            req.plantaId = plantaId
+
+            const caminhoFoto = req.file ? path.relative(process.cwd(), req.file.path) : null
+
+            if (!req.file) {
+                return res.status(400).json({ erro: "Imagem não enviada" })
+            }
+
+            const respostaRegistro = await PlantaUsuario.registrarPlanta(
+                userId,
+                especieId,
+                nome,
+                caminhoFoto,
+                plantio,
+                plantaId
+            )
+
+            return res.status(200).json({
+                mensagem: "Planta registrada com sucesso",
+                planta: respostaRegistro,
+            })
+        } catch (error) {
+            console.error("Erro ao registrar planta:", error)
+            return res.status(500).json({ erro: "Erro ao registrar planta" })
+        }
     }
 
-    if (!req.file) {
-        return res.status(400).json({ erro: "Imagem não enviada" })
-    }
-
-    try {
-        const respostaRegistro = await PlantaUsuario.registrarPlanta(userId, especieId, nome, caminhoFoto, plantio)
-
-        return res.status(200).json({
-            mensagem: "Planta registrada com sucesso",
-            planta: respostaRegistro,
-        });
-    } catch (error) {
-        console.error("Erro ao registrar planta:", error)
-        return res.status(500).json({ erro: "Erro ao registrar planta" })
-    }
-}
 
 export async function analiseGemni(req, res) {
     if (!req.file) {
-        throw criarErro("Imagem não enviada", 400);
+        throw criarErro("Imagem não enviada", 400)
     }
 
     const caminhoOriginal = req.file.path
