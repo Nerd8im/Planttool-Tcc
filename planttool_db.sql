@@ -60,12 +60,10 @@ CREATE TABLE tb_userPlanta (
     userPlanta_nome VARCHAR(244),
     userPlanta_foto varchar(244),
     data_plantio DATE,
+    ultimaRega DATE,
     FOREIGN KEY (user_id) REFERENCES tb_user(user_id) ON DELETE CASCADE,
     FOREIGN KEY (plantaEspecie_id) REFERENCES tb_plantaEspecie(plantaEspecie_id)
 );
-
-ALTER TABLE tb_userPlanta
-ADD COLUMN ultimaRega DATE
 
 CREATE TABLE tb_cuidadoNotificacao (
     notificacao_id VARCHAR(60) PRIMARY KEY,
@@ -128,3 +126,20 @@ FROM tb_user u
 INNER JOIN tb_userPlanta up ON u.user_id = up.user_id
 INNER JOIN tb_plantaEspecie pe ON up.plantaEspecie_id = pe.plantaEspecie_id
 INNER JOIN tb_classificacao_botanica cb ON pe.classificacao_id = cb.classificacao_id;
+
+SELECT
+    up.userPlanta_id,
+    up.userPlanta_nome,
+    up.userPlanta_foto,
+    up.data_plantio,
+    up.ultimaRega,
+    pe.plantaEspecie_nome,
+    pe.plantaEspecie_descricao,
+    gc.titulo,
+    gc.conteudo
+FROM
+    tb_userPlanta up
+INNER JOIN
+    tb_plantaEspecie pe ON up.plantaEspecie_id = pe.plantaEspecie_id
+LEFT JOIN
+    tb_guiaCuidado gc ON pe.plantaEspecie_id = gc.plantaEspecie_id;
