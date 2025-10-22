@@ -1,6 +1,7 @@
 import express from "express"
 import 'dotenv/config.js'
 import cors from "cors"
+import "./src/services/tarefasAutomaticas.js"
 import autenticarToken from "./src/middlewares/autenticarToken.js"
 import { login, postarImagem, registrarUsuario, registrarEspecie, registrarPlanta, analiseGemni } from "./src/Controllers/post_controllers.js"
 import { trocarFotoPerfil} from "./src/Controllers/put_controllers.js"
