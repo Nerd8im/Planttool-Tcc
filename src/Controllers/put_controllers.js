@@ -55,7 +55,7 @@ export async function trocarFotoPerfil(req, res) {
 
         await usuario.atualizarFoto(caminhoFinal)
 
-        res.status(200).json("Foto atualizada com sucesso!")
+        res.status(200).json(caminhoFinal)
     } catch (error) {
         console.error(error)
         res.status(error.statusCode || 500).json({ erro: error.message })

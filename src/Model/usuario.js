@@ -1,11 +1,11 @@
-import { conexao } from "../DAO/conexao.js"
+
+import { operacoesGerais } from "../DAO/operacoesDB.js"
 import { criarErro } from "../utils/erros.js"
 import bcrypt, { compare, hash } from "bcrypt"
 import jwt from "jsonwebtoken"
 import { v4 as uuidv4 } from "uuid"
 
 const chaveSecreta = process.env.CHAVE_SECRETA
-const pool = await conexao()
 
 class Usuario {
     constructor(id, nome, sobrenome, email, senha, fotoPerfil) {
@@ -22,48 +22,35 @@ class Usuario {
         const salt = 12
 
         if (!nome || !sobrenome || !email || !senha) {
-            throw criarErro("Todos os campos são obrigatórios", 400)
+            throw criarErro("Todos os campos são obrigatórios", 400);
         }
 
-        //Isso serve para verificar a estrutura do email, garantindo que ele tenha um arroba e ponto final
         let emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        //.test serve para verificar se tem ou não os caracteres na string e devolve em verdadeiro ou falso
+
         emailValido.test(email)
 
         if (!emailValido.test(email)) {
             console.log(email)
             throw criarErro("Formato do Email inválido")
         }
-
-
+        
         const queryVerifica = "SELECT user_id FROM tb_user WHERE user_email = ?"
-        const [resultadoVerificacao] = await pool.execute(queryVerifica, [email])
+        const resultadoVerificacao = await operacoesGerais(queryVerifica, [email])
 
-        if (resultadoVerificacao.length > 0) {
+        if (resultadoVerificacao[0] && resultadoVerificacao[0].length > 0) {
             throw criarErro("Já existe um usuário cadastrado com esse e-mail", 409)
         }
 
         const id = uuidv4()
         const queryRegistro = "INSERT INTO tb_user(user_id, user_nome, user_sobrenome, user_email, user_senha) VALUES (?, ?, ?, ?, ?)"
 
-
         try {
             const senhaHash = await bcrypt.hash(senha, salt)
-
-            await pool.execute(queryRegistro, [
-                id,
-                nome,
-                sobrenome,
-                email,
-                senhaHash
-            ])
-
+            await operacoesGerais(queryRegistro, [id, nome, sobrenome, email, senhaHash])
             return {
                 mensagem: "Usuário registrado com sucesso",
                 usuario: { nome, sobrenome }
             }
-
-
         } catch (error) {
             throw error
         }
@@ -76,85 +63,83 @@ class Usuario {
             throw criarErro("Email e senha são obrigatorios", 400)
         }
 
-
         const querySenha = 'SELECT user_senha FROM tb_user WHERE user_email = ?'
         const queryBuscarUser = 'SELECT user_id, user_nome, user_sobrenome, user_email, user_foto FROM tb_user WHERE user_email = ?'
 
         try {
-
-            const [senhaReal] = await pool.execute(querySenha, [email])
-
-            if (senhaReal.length === 0) {
+            const senhaReal = await operacoesGerais(querySenha, [email])
+            if (!senhaReal[0] || senhaReal[0].length === 0) {
                 throw criarErro("Úsuario não encontrado", 404)
             }
 
-            if (await bcrypt.compare(senha, senhaReal[0].user_senha) == true) {
-
-                const [dadosUsuarioDb] = await pool.execute(queryBuscarUser, [email])
-                const tokenUsuario = jwt.sign(dadosUsuarioDb[0], chaveSecreta, { expiresIn: "3h" })
-                const dadosUsuario = dadosUsuarioDb[0]
-
+            if (await bcrypt.compare(senha, senhaReal[0][0].user_senha) == true) {
+                const dadosUsuarioDb = await operacoesGerais(queryBuscarUser, [email])
+                const tokenUsuario = jwt.sign(dadosUsuarioDb[0][0], chaveSecreta, { expiresIn: "3h" })
+                const dadosUsuario = dadosUsuarioDb[0][0]
                 console.log("Um usuário foi autenticado com sucesso")
-
                 return { tokenUsuario, dadosUsuario }
-
             } else {
                 throw criarErro("senha incorreta", 401)
             }
 
         } catch (error) {
-
             if (error.statusCode) {
                 throw error
             }
-
             console.log(error)
-            
             throw criarErro("erro ao autenticar", 500)
+        }
+    }
+
+    async buscarFotoPerfil() {
+        
+        const query = `SELECT user_foto FROM tb_user WHERE user_id = ?`
+
+        try {
+            const respostaDb = await operacoesGerais(query, [this.id])
+            return respostaDb[0][0]?.user_foto
+        } catch (error) {
+            console.log(error)
+            throw criarErro("Erro ao buscar foto de perfil", 500)
         }
 
     }
 
     async atualizarFoto(caminhoImagem) {
+
         const query = `UPDATE tb_user SET user_foto = ? WHERE user_id = ?`
 
         try {
-            const [respostaDb] = await pool.execute(query, [caminhoImagem, this.id])
-
-            console.log(respostaDb)
+            await operacoesGerais(query, [caminhoImagem, this.id])
         } catch (error) {
             console.log(error)
             throw criarErro("Erro ao atualizar foto de perfil", 500)
         }
-
     }
 
     async buscarPlantasUsuario() {
+
         const query = `SELECT * FROM tb_userPlanta WHERE user_id = ?`
 
         try {
-            const [respostaDb] = await pool.execute(query, [this.id])
-
+            const respostaDb = await operacoesGerais(query, [this.id])
             return respostaDb[0]
         } catch (error) {
             console.log(error)
             throw criarErro("Erro ao buscar plantas do usuário", 500)
         }
-
     }
 
     async deletarUsuario() {
+
         const query = `DELETE FROM tb_user WHERE user_id = ?`
 
         try {
-            const [respostaDb] = await pool.execute(query, [this.id])
-
-            console.log(respostaDb)
+            await operacoesGerais(query, [this.id])
         } catch (error) {
             console.log(error)
             throw criarErro("Erro ao deletar usuário", 500)
         }
-
     }
 
 }

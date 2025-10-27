@@ -5,49 +5,19 @@ import { criarErro } from "../utils/erros.js";
 import EspeciePlanta from "../Model/plantaEspecie.js"
 import PlantaUsuario from "../Model/plantaUsuario.js";
 
-export async function pegarImagem(req, res) {
-    const { image } = req.params;
-
-    const caminho = path.resolve('uploads_publicos', 'usuarios', image)
-
-    console.log(caminho);
-
-    if (!fs.existsSync(caminho)) {
-        return res.status(404).json({ erro: "Imagem não encontrada" })
-    }
-
-    try {
-        return res.status(200).sendFile(caminho)
-    } catch (error) {
-        console.error(error);
-        res.status(error.statusCode || 500).json({ erro: error.message })
-    }
-}
-
 export async function pegarImagemUsuario(req, res) {
-    const id = req.params.id;
+    const usuario = new Usuario(req.usuario.user_id)
 
-    const formatos = [".jpg", ".png"]
+    let caminhoImagem = await usuario.buscarFotoPerfil(req.usuario.user_id)
 
-    let caminhoFinal = null
-
-    // Se não tem extensão busca por todas as possíveis
-    for (const ext of formatos) {
-        const caminho = path.resolve('uploads_privados', id, 'foto_perfil', `${id}${ext}`)
-        if (fs.existsSync(caminho)) {
-            caminhoFinal = caminho
-            break
-        }
-    }
-
-    if (!caminhoFinal) {
+    if (!caminhoImagem) {
         return res.status(404).json({ erro: "Imagem não encontrada" })
     }
 
     try {
-        return res.status(200).sendFile(caminhoFinal);
+        return res.status(200).sendFile(path.resolve(caminhoImagem))
     } catch (error) {
-        console.error(error);
+        console.error(error)
         res.status(error.statusCode || 500).json({ erro: error.message })
     }
 }

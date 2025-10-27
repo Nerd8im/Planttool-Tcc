@@ -6,7 +6,7 @@ import autenticarToken from "./src/middlewares/autenticarToken.js"
 import { login, postarImagem, registrarUsuario, registrarEspecie, registrarPlanta, analiseGemni } from "./src/Controllers/post_controllers.js"
 import { trocarFotoPerfil} from "./src/Controllers/put_controllers.js"
 import { uploadImagem } from "./src/middlewares/uploadImagem.js"
-import { pegarImagem, pegarImagemPlanta, buscarPlantaId, pegarImagemUsuario, buscarEspecies, buscarPlantasUsuario} from "./src/Controllers/get_controllers.js"
+import { pegarImagemPlanta, buscarPlantaId, pegarImagemUsuario, buscarEspecies, buscarPlantasUsuario} from "./src/Controllers/get_controllers.js"
 
 const app = express()
 const porta = 3000
@@ -38,10 +38,7 @@ app.post(`${rota}/uploadImagem`, autenticarToken, uploadImagemPublica, postarIma
 // Rota para trocar a foto de perfil (privada)
 app.put(`${rota}/trocarFotoPerfil`, autenticarToken, uploadFotoPerfil, trocarFotoPerfil)
 
-// --- Rotas de imagens ---
-app.get(`${rota}/imagem/:image`, pegarImagem)
-
-app.get(`${rota}/imagem/usuario/fotoperfil/:id`, pegarImagemUsuario)
+app.get(`${rota}/imagem/usuario/fotoperfil`, autenticarToken, pegarImagemUsuario)
 
 // --- Rotas para especie de plantas ---
 app.post(`${rota}/registrarEspecie`, registrarEspecie)
@@ -52,11 +49,14 @@ app.get(`${rota}/especies`, buscarEspecies)
 
 app.post(`${rota}/registrarPlanta`, autenticarToken, uploadFotoPlanta, registrarPlanta)
 
-app.get(`${rota}/buscarPlantasUsuario`, autenticarToken, buscarPlantasUsuario)
+app.get(`${rota}/PlantasUsuario`, autenticarToken, buscarPlantasUsuario)
 
 app.get(`${rota}/plantaUsuario/:id`, autenticarToken, buscarPlantaId)
 
 app.get(`${rota}/plantaUsuario/imagem/:id`, autenticarToken, pegarImagemPlanta)
+
+//vou implementar depois
+app.get(`${rota}/plantaUsuario/regar`, autenticarToken)
 
 // rota gemini
 app.post(`${rota}/gemini`, autenticarToken, uploadImagemPrivada, analiseGemni)
