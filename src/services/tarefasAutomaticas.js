@@ -4,7 +4,7 @@ import { operacoesGerais } from "../DAO/operacoesDB.js"
 // Função para verificar plantas que precisam ser regadas
 async function verificarPlantasParaRegar() {
     const query = `
-        SELECT up.userPlanta_id, up.userPlanta_nome, up.ultimaRega, pe.plantaEspecie_intervalo_rega_horas
+        SELECT up.userPlanta_id, up.userPlanta_nome, up.ultima_rega, pe.plantaEspecie_intervalo_rega_horas
         FROM tb_userPlanta up
         INNER JOIN tb_plantaEspecie pe ON up.plantaEspecie_id = pe.plantaEspecie_id
     `
@@ -38,4 +38,5 @@ async function verificarPlantasParaRegar() {
 }
 
 // Agendado para rodar a cada 1 minuto
+
 cron.schedule("* * * * *", verificarPlantasParaRegar)
