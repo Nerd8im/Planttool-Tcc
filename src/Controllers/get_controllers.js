@@ -147,23 +147,17 @@ export async function buscarEspecies(req, res) {
 }
 
 export async function buscarImagemEspecie(req, res) {
-    const { idEspecie } = req.params
+    const idEspecie = req.params
 
     try {
-        const caminhoImagem = await EspeciePlanta.buscarImagem(idEspecie)
+        let caminhoImagem = await EspeciePlanta.buscarImagem(idEspecie)
 
         if (!caminhoImagem) {
             return res.status(404).json({ erro: "Imagem não encontrada" })
         }
-        
-        return res.status(200).sendFile(path.resolve(caminhoImagem), (err) => {
-            if (err) {
-                console.error("Erro ao enviar o arquivo:", err)
-                return res.status(500).json({ erro: "Erro ao enviar a imagem" })
-            
-        })
+
+        return res.status(200).sendFile(path.resolve(caminhoImagem))
     } catch (error) {
-        console.error("Erro ao buscar a imagem da espécie:", error)
-        return res.status(500).json({ erro: "Erro interno do servidor" })
+        console.log(error)
     }
 }
