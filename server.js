@@ -6,7 +6,7 @@ import autenticarToken from "./src/middlewares/autenticarToken.js"
 import { login, postarImagem, registrarUsuario, registrarEspecie, registrarPlanta, analiseGemni } from "./src/Controllers/post_controllers.js"
 import { trocarFotoPerfil} from "./src/Controllers/put_controllers.js"
 import { uploadImagem } from "./src/middlewares/uploadImagem.js"
-import { pegarImagemPlanta, buscarPlantaId, pegarImagemUsuario, buscarEspecies, buscarPlantasUsuario} from "./src/Controllers/get_controllers.js"
+import { pegarImagemPlanta, buscarPlantaId, pegarImagemUsuario, buscarEspecies, buscarPlantasUsuario, buscarImagemEspecie} from "./src/Controllers/get_controllers.js"
 
 const app = express()
 const porta = 3000
@@ -44,6 +44,8 @@ app.get(`${rota}/imagem/usuario/fotoperfil`, autenticarToken, pegarImagemUsuario
 app.post(`${rota}/registrarEspecie`, registrarEspecie)
 
 app.get(`${rota}/especies`, buscarEspecies)
+
+app.get(`${rota}/especies/imagem:id`, buscarImagemEspecie)
 
 // --- Rotas de plantas do usuário ---
 

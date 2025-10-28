@@ -1,4 +1,5 @@
 import { conexao } from "../DAO/conexao.js"
+import { operacoesGerais } from "../DAO/operacoesDB.js"
 import { criarErro } from "../utils/erros.js"
 
 const pool = await conexao()
@@ -47,6 +48,24 @@ class EspeciePlanta {
         }
 
     }
+
+    static async buscarImagem(id){
+
+        if (!id) {
+            throw criarErro("ID da espécie não fornecido", 400)
+        }
+
+        const query = 'SELECT plantaEspecie_foto FROM tb_plantaEspecie WHERE plantaEspecie_id = ?'
+
+        try {
+            const resultadoDb = await operacoesGerais(query, [id])
+            return resultadoDb[0][0]?.plantaEspecie_foto
+        } catch (error) {
+            console.log(error)
+            throw criarErro("Erro ao buscar imagem da espécie", 500)
+        }
+       
+    }   
 }
 
 export default EspeciePlanta

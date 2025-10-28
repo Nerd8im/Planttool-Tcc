@@ -15,7 +15,6 @@ async function verificarPlantasParaRegar() {
 
         for (const planta of resultado[0]) {
             if (!planta.ultimaRega) {
-                // Nunca foi regada, incluir na lista
                 plantasParaRegar.push(planta)
                 continue
             }
@@ -38,5 +37,4 @@ async function verificarPlantasParaRegar() {
 }
 
 // Agendado para rodar a cada 1 minuto
-
 cron.schedule("* * * * *", verificarPlantasParaRegar)

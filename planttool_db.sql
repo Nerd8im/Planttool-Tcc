@@ -60,7 +60,7 @@ CREATE TABLE tb_userPlanta (
     userPlanta_nome VARCHAR(244),
     userPlanta_foto varchar(244),
     data_plantio DATE,
-    ultimaRega DATE,
+    ultima_rega DATE,
     FOREIGN KEY (user_id) REFERENCES tb_user(user_id) ON DELETE CASCADE,
     FOREIGN KEY (plantaEspecie_id) REFERENCES tb_plantaEspecie(plantaEspecie_id)
 );

@@ -4,6 +4,7 @@ import fs from "fs";
 import { criarErro } from "../utils/erros.js";
 import EspeciePlanta from "../Model/plantaEspecie.js"
 import PlantaUsuario from "../Model/plantaUsuario.js";
+import { stringify } from "querystring";
 
 export async function pegarImagemUsuario(req, res) {
     const usuario = new Usuario(req.usuario.user_id)
@@ -142,5 +143,21 @@ export async function buscarEspecies(req, res) {
     } catch (error) {
         console.error(error);
         res.status(500).json({ erro: "Erro ao buscar espécies de plantas" })
+    }
+}
+
+export async function buscarImagemEspecie(req, res) {
+    const idEspecie = req.params
+
+    try {
+        let caminhoImagem = await EspeciePlanta.buscarImagem(idEspecie)
+
+        if (!caminhoImagem) {
+            return res.status(404).json({ erro: "Imagem não encontrada" })
+        }
+
+        return res.status(200).sendFile(path.resolve(caminhoImagem))
+    } catch (error) {
+        console.log(error)
     }
 }
