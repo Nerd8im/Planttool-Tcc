@@ -45,7 +45,7 @@ app.post(`${rota}/registrarEspecie`, registrarEspecie)
 
 app.get(`${rota}/especies`, buscarEspecies)
 
-app.get(`${rota}/especies/imagem:id`, buscarImagemEspecie)
+app.get(`${rota}/especies/imagem/:id`, buscarImagemEspecie)
 
 // --- Rotas de plantas do usuário ---
 
@@ -66,3 +66,4 @@ app.post(`${rota}/gemini`, autenticarToken, uploadImagemPrivada, analiseGemni)
 app.listen(porta, () => {
     console.log(`Servidor rodando em http://localhost:${porta}/planttool/v1`)
 })
+
