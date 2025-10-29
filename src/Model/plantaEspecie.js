@@ -25,7 +25,7 @@ class EspeciePlanta {
         }
 
         try {
-            await pool.execute(queryRegistro, [nome, descricao, cuidados, caminhoFoto, rega, classificacao])
+            await operacoesGerais(queryRegistro, [nome, descricao, cuidados, caminhoFoto, rega, classificacao ])
             return "Espécie registrada com sucesso"
         } catch (error) {
             throw criarErro("Erro ao inserir espécie", 200)
@@ -37,14 +37,27 @@ class EspeciePlanta {
 
         try {
 
-            let [resultado] = await pool.execute(queryBusca)
-
-            console.log(resultado)
+            let [resultado] = await operacoesGerais(queryBusca)
 
             return resultado
 
         } catch (error) {
+            console.log(error)
             throw criarErro("erro ao contatar o banco de dados", 500)
+        }
+
+    }
+
+    static async buscarEspeciesPorClassificacao(classificacaoID){
+
+        const query = "SELECT * FROM tb_plantaEspecie WHERE classificacao_id = ?"
+
+        try {
+            let [resultado] = await operacoesGerais(query, [classificacaoID])
+
+            return resultado
+        } catch (error) {
+            throw error
         }
 
     }
@@ -54,7 +67,7 @@ class EspeciePlanta {
         if (!id) {
             throw criarErro("ID da espécie não fornecido", 400)
         }
-
+        console.log("id selecionado: ", id)
         const query = 'SELECT plantaEspecie_foto FROM tb_plantaEspecie WHERE plantaEspecie_id = ?'
 
         try {

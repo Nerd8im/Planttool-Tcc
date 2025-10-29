@@ -54,6 +54,23 @@ export async function buscarPlantasUsuario(req, res) {
     }
 }
 
+export async function buscarImagemEspecie(req, res) {
+    const idEspecie = req.params.id
+
+    try {
+        let caminhoImagem = await EspeciePlanta.buscarImagem(idEspecie)
+
+        if (!caminhoImagem) {
+            return res.status(404).json({ erro: "Imagem não encontrada" })
+        }
+
+        return res.status(200).sendFile(path.resolve(caminhoImagem))
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
 // A principal diferença é que aqui vem a planta especifica do usuário com detalhes
 export async function buscarPlantaId(req, res) {
     const idPlanta = req.params.id
@@ -146,18 +163,27 @@ export async function buscarEspecies(req, res) {
     }
 }
 
-export async function buscarImagemEspecie(req, res) {
-    const idEspecie = req.params
+export async function buscarEspeciePorclassificao(req, res) {
+    const classificacaoID = parseInt(req.params.classificaoId)
 
     try {
-        let caminhoImagem = await EspeciePlanta.buscarImagem(idEspecie)
+            
+        let resultados = await EspeciePlanta.buscarEspeciesPorClassificacao(classificacaoID)
+        console.log (resultados)
 
-        if (!caminhoImagem) {
-            return res.status(404).json({ erro: "Imagem não encontrada" })
+        if (!resultados || resultados.length == 0){
+            res.status(404).json('nenhuma especie pertencente a essa classificação encontrada')
         }
 
-        return res.status(200).sendFile(path.resolve(caminhoImagem))
+        res.status(200).json(resultados)
+
     } catch (error) {
         console.log(error)
+        res.status(error.statusCode || 500)
+        throw error
     }
+
+
 }
+
+
