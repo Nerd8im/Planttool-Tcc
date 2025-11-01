@@ -10,6 +10,8 @@ CREATE TABLE tb_user(
     user_foto VARCHAR(255)
 );
 
+SELECT * from tb_user;
+
 CREATE TABLE tb_classificacao_botanica (
     classificacao_id INT AUTO_INCREMENT PRIMARY KEY,
     classificacao_nome VARCHAR(100) UNIQUE NOT NULL,
@@ -32,11 +34,22 @@ CREATE TABLE tb_plantaEspecie(
     classificacao_id INT,
     FOREIGN KEY (classificacao_id) REFERENCES tb_classificacao_botanica(classificacao_id)
 );
+select * from tb_plantaEspecie;
 
 
-INSERT INTO tb_plantaEspecie (plantaEspecie_nome, plantaEspecie_descricao, plantaEspecie_cuidados, plantaEspecie_foto, plantaEspecie_intervalo_rega_horas, classificacao_id) VALUES
-('Ficus lyrata', 'Também conhecida como figueira-lira, ótima para ambientes internos.', 'Requer luz indireta e regas moderadas.', 'publico\\imagem_plantas\\placeholder.jpg', 72, 1),
-('Pinus elliottii', 'Espécie de pinheiro comum no sul do Brasil.', 'Prefere solo arenoso e boa iluminação.', 'publico\\imagem_plantas\\placeholder.jpg', 168, 2);
+INSERT INTO tb_plantaEspecie (plantaEspecie_nome, plantaEspecie_descricao, plantaEspecie_cuidados, plantaEspecie_foto, plantaEspecie_intervalo_rega_horas, classificacao_id) VALUES 
+('Tomate', 'Legume muito cultivado em hortas e quintais.', 'Gosta de sol pleno e regas regulares.', 'publico\\imagem_plantas\\tomate.jpg', 48, 1),
+('Alface', 'Hortaliça de folhas verdes e cultivo rápido.', 'Precisa de solo úmido e sol moderado.', 'publico\\imagem_plantas\\alface.jpg', 24, 1),
+('Cebolinha', 'Temperinho comum em hortas caseiras.', 'Prefere sol e regas frequentes.', 'publico\\imagem_plantas\\cebolinha.jpg', 36, 1),
+('Salsinha', 'Erva usada em diversas receitas.', 'Gosta de meia-sombra e solo úmido.', 'publico\\imagem_plantas\\salsinha.jpg', 36, 1),
+('Coentro', 'Temperinho popular em pratos regionais.', 'Gosta de sol direto e regas frequentes.', 'publico\\imagem_plantas\\coentro.jpg', 24, 1),
+('Manjericão', 'Erva aromática muito usada em molhos.', 'Precisa de sol e regas leves diárias.', 'publico\\imagem_plantas\\manjericao.jpg', 24, 1),
+('Hortelã', 'Usada em chás e temperos.', 'Prefere meia-sombra e solo úmido.', 'publico\\imagem_plantas\\hortela.jpg', 36, 1),
+('Cenoura', 'Raiz comestível fácil de cultivar.', 'Gosta de sol e solo bem drenado.', 'publico\\imagem_plantas\\cenoura.jpg', 72, 1),
+('Beterraba', 'Raiz nutritiva e de cor intensa.', 'Prefere sol pleno e solo fofo.', 'publico\\imagem_plantas\\beterraba.jpg', 72, 1),
+('Pimenta', 'Planta produtiva e fácil de manter.', 'Gosta de sol direto e regas moderadas.', 'publico\\imagem_plantas\\pimenta.jpg', 48, 1),
+('Morango', 'Fruta pequena e doce, ótima para vasos.', 'Prefere sol leve e regas constantes.', 'publico\\imagem_plantas\\morango.jpg', 36, 1),
+('Feijão', 'Grão tradicional e muito cultivado no Brasil.', 'Gosta de sol pleno e solo bem drenado.', 'publico\\imagem_plantas\\feijao.jpg', 72, 1);
 
 
 CREATE TABLE tb_guiaCuidado (
@@ -64,6 +77,7 @@ CREATE TABLE tb_userPlanta (
     FOREIGN KEY (user_id) REFERENCES tb_user(user_id) ON DELETE CASCADE,
     FOREIGN KEY (plantaEspecie_id) REFERENCES tb_plantaEspecie(plantaEspecie_id)
 );
+select * from tb_userPlanta;
 
 CREATE TABLE tb_cuidadoNotificacao (
     notificacao_id VARCHAR(60) PRIMARY KEY,

@@ -115,9 +115,9 @@ export async function registrarEspecie(req, res) {
 
             const caminhoFoto = req.file ? path.relative(process.cwd(), req.file.path) : null
 
-            if (!req.file) {
-                return res.status(400).json({ erro: "Imagem não enviada" })
-            }
+            // if (!req.file) {
+            //     return res.status(400).json({ erro: "Imagem não enviada" })
+            // }
 
             const respostaRegistro = await PlantaUsuario.registrarPlanta(
                 userId,
