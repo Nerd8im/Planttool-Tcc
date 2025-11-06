@@ -4,7 +4,8 @@ import cors from "cors"
 import "./src/services/tarefasAutomaticas.js"
 import autenticarToken from "./src/middlewares/autenticarToken.js"
 import { login, postarImagem, registrarUsuario, registrarEspecie, registrarPlanta, analiseGemni } from "./src/Controllers/post_controllers.js"
-import { trocarFotoPerfil} from "./src/Controllers/put_controllers.js"
+import { trocarFotoPerfil, alterarImagemPlanta} from "./src/Controllers/put_controllers.js"
+import { deletarUsuario, deletarPlantaUsuario } from "./src/Controllers/delete_controllers.js"
 import { uploadImagem } from "./src/middlewares/uploadImagem.js"
 import { pegarImagemPlanta, buscarEspeciePorclassificao, buscarPlantaId, pegarImagemUsuario, buscarEspecies, buscarPlantasUsuario, buscarImagemEspecie} from "./src/Controllers/get_controllers.js"
 
@@ -31,6 +32,8 @@ app.get(`${rota}/`, (req, res)=>{
 app.post(`${rota}/registrarUsuario`, registrarUsuario)
 
 app.post(`${rota}/login`, login)
+
+app.delete(`${rota}/deletarUsuario`, autenticarToken, deletarUsuario)
 
 // Rota para upload de uma imagem pública genérica do usuário
 app.post(`${rota}/uploadImagem`, autenticarToken, uploadImagemPublica, postarImagem)
@@ -59,8 +62,13 @@ app.get(`${rota}/plantaUsuario/:id`, autenticarToken, buscarPlantaId)
 
 app.get(`${rota}/plantaUsuario/imagem/:id`, autenticarToken, pegarImagemPlanta)
 
+app.put(`${rota}/plantaUsuario/alterarImagem/:id`, autenticarToken, uploadFotoPlanta, alterarImagemPlanta)
+
 //vou implementar depois
-app.get(`${rota}/plantaUsuario/regar`, autenticarToken)
+app.post(`${rota}/plantaUsuario/regar/:id`, autenticarToken)
+
+app.delete(`${rota}/plantaUsuario/deletar/:id`, autenticarToken, deletarPlantaUsuario)
+
 
 // rota gemini
 app.post(`${rota}/gemini`, autenticarToken, uploadImagemPrivada, analiseGemni)

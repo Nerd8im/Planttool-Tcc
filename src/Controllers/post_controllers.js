@@ -102,6 +102,7 @@ export async function registrarEspecie(req, res) {
     export async function registrarPlanta(req, res) {
         const userId = req.usuario.user_id
         const { especieId, nome } = req.body
+
         const plantio = new Date()
 
         if (!especieId || !nome) {

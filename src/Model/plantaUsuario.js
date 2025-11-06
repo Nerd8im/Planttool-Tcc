@@ -38,6 +38,48 @@ class PlantaUsuario {
         }
     }
 
+    static async deletarPlanta(idPlanta) {
+        const query = "DELETE FROM tb_userPlanta WHERE userPlanta_id = ?"
+        try {
+            const resultado = await operacoesGerais(query, [idPlanta])
+            console.log("Planta deletada com sucesso:", resultado)
+            return {
+                mensagem: "Planta deletada com sucesso"
+            }
+        } catch (error) {
+            console.error("Erro ao deletar planta no banco de dados:", error)
+            throw criarErro("Erro ao deletar planta", 500)
+        }
+    }
+
+    static async alterarFoto(idPlanta, caminhoFoto) {
+        const queryAlteracao = "UPDATE tb_userPlanta SET userPlanta_foto = ? WHERE userPlanta_id = ?"
+        try {
+            const resultado = await operacoesGerais(queryAlteracao, [caminhoFoto, idPlanta])
+            console.log("Foto da planta alterada com sucesso:", resultado)
+            return {
+                mensagem: "Foto da planta alterada com sucesso"
+            }
+        } catch (error) {
+            console.error("Erro ao alterar foto da planta no banco de dados:", error)
+            throw criarErro("Erro ao alterar foto da planta", 500)
+        }
+    }
+
+    static async alterarNome(idPlanta, novoNome) {
+        const query = "UPDATE tb_userPlanta SET userPlanta_nome = ? WHERE userPlanta_id = ?"
+        try {
+            const resultado = await operacoesGerais(query, [novoNome, idPlanta])
+            console.log("Nome da planta alterado com sucesso:", resultado)
+            return {
+                mensagem: "Nome da planta alterado com sucesso"
+            }
+        } catch (error) {
+            console.error("Erro ao alterar nome da planta no banco de dados:", error)
+            throw criarErro("Erro ao alterar nome da planta", 500)
+        }
+    }
+
     static async buscarPlantasUsuario(userId) {
         const queryBusca = "SELECT * FROM tb_userPlanta WHERE user_id = ?"
         try {
@@ -62,8 +104,22 @@ class PlantaUsuario {
             throw criarErro("erro ao contatar o banco de dados", 500)
         }
     }
-    async rega(req, res) {
-        
+
+    async regar() {
+        const query = "UPDATE tb_userPlanta SET ultima_rega = NOW() WHERE userPlanta_id = ?"
+        const queryBusca = "SELECT ultima_rega FROM tb_userPlanta WHERE userPlanta_id = ?"
+        try {
+            const resultadoRega = await operacoesGerais(query, [this.idPlanta])
+            console.log("Planta regada com sucesso:", resultadoRega)
+
+            const resultadoBusca = await operacoesGerais(queryBusca, [this.idPlanta])
+            this.rega = resultadoBusca[0][0]?.ultima_rega
+            return this.rega
+
+        } catch (error) {
+            console.error("Erro ao regar planta no banco de dados:", error)
+            throw criarErro("Erro ao regar planta", 500)
+        }
     }
 }
 

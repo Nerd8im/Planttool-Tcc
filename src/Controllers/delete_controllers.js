@@ -1,4 +1,5 @@
 import Usuario from "../Model/usuario.js";
+import PlantaUsuario from "../Model/plantaUsuario.js";
 import path from "path";
 import fs from "fs";
 import { criarErro } from "../utils/erros.js";
@@ -20,3 +21,13 @@ export async function deletarUsuario(req, res) {
 }
 
 //Planta do usuário
+export async function deletarPlantaUsuario(req, res) {
+    const idPlanta = req.params.id
+    try {
+        const resposta = await PlantaUsuario.deletarPlanta(idPlanta)
+        res.status(200).json(resposta)
+    } catch (error) {
+        console.error(error)
+        res.status(error.statusCode || 500).json({ erro: error.message })
+    }
+}
