@@ -2,6 +2,7 @@ import Usuario from "../Model/usuario.js";
 import path from "path";
 import fs from "fs";
 import { criarErro } from "../utils/erros.js";
+import { processarClima } from "../utils/processaClima.js";
 import EspeciePlanta from "../Model/plantaEspecie.js"
 import PlantaUsuario from "../Model/plantaUsuario.js";
 import { stringify } from "querystring";
@@ -167,11 +168,11 @@ export async function buscarEspeciePorclassificao(req, res) {
     const classificacaoID = parseInt(req.params.classificaoId)
 
     try {
-            
-        let resultados = await EspeciePlanta.buscarEspeciesPorClassificacao(classificacaoID)
-        console.log (resultados)
 
-        if (!resultados || resultados.length == 0){
+        let resultados = await EspeciePlanta.buscarEspeciesPorClassificacao(classificacaoID)
+        console.log(resultados)
+
+        if (!resultados || resultados.length == 0) {
             res.status(404).json('nenhuma especie pertencente a essa classificação encontrada')
         }
 
@@ -186,4 +187,28 @@ export async function buscarEspeciePorclassificao(req, res) {
 
 }
 
+export async function climaAtual(req, res) {
+  const { latitude, longitude } = req.query;
 
+  console.log("pedido de para:", latitude, longitude);
+
+  try {
+    // 🔹 Corrigido o URL — agora usa "&longitude=" corretamente
+    const response = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_min,temperature_2m_max,daylight_duration,sunshine_duration,rain_sum,snowfall_sum,sunrise,sunset&hourly=weather_code,cloud_cover,rain,precipitation,precipitation_probability,apparent_temperature,temperature_80m&current=precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,apparent_temperature,relative_humidity_2m,temperature_2m`
+    );
+
+    if (!response.ok) {
+      throw new Error("Erro ao buscar dados climáticos");
+    }
+
+    const climaDados = await response.json();
+
+    const clima = processarClima(climaDados);
+
+    return res.status(200).json(clima);
+  } catch (error) {
+    console.error("❌ Erro no climaAtual:", error.message);
+    return res.status(500).json({ error: "Erro ao obter dados do clima" });
+  }
+}

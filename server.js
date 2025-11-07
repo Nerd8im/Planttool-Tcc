@@ -7,7 +7,7 @@ import { login, postarImagem, registrarUsuario, registrarEspecie, registrarPlant
 import { trocarFotoPerfil, alterarImagemPlanta} from "./src/Controllers/put_controllers.js"
 import { deletarUsuario, deletarPlantaUsuario } from "./src/Controllers/delete_controllers.js"
 import { uploadImagem } from "./src/middlewares/uploadImagem.js"
-import { pegarImagemPlanta, buscarEspeciePorclassificao, buscarPlantaId, pegarImagemUsuario, buscarEspecies, buscarPlantasUsuario, buscarImagemEspecie} from "./src/Controllers/get_controllers.js"
+import { pegarImagemPlanta, buscarEspeciePorclassificao, buscarPlantaId, pegarImagemUsuario, buscarEspecies, buscarPlantasUsuario, buscarImagemEspecie, climaAtual} from "./src/Controllers/get_controllers.js"
 
 const app = express()
 const porta = 3000
@@ -72,6 +72,10 @@ app.delete(`${rota}/plantaUsuario/deletar/:id`, autenticarToken, deletarPlantaUs
 
 // rota gemini
 app.post(`${rota}/gemini`, autenticarToken, uploadImagemPrivada, analiseGemni)
+
+// rota da open-meteo (api de clima)
+
+app.get(`${rota}/clima`, climaAtual)
 
 app.listen(porta, () => {
     console.log(`Servidor rodando em http://localhost:${porta}/planttool/v1`)
