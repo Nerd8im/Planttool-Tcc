@@ -92,7 +92,7 @@ class PlantaUsuario {
     }
 
     static async buscarPlantaId(userId, idPlanta) {
-        const queryBusca = "SELECT up.userPlanta_id, up.userPlanta_nome, up.userPlanta_foto, up.data_plantio, up.ultimaRega, pe.plantaEspecie_nome, pe.plantaEspecie_descricao, gc.titulo, gc.conteudo FROM tb_userPlanta up INNER JOIN tb_plantaEspecie pe ON up.plantaEspecie_id = pe.plantaEspecie_id LEFT JOIN tb_guiaCuidado gc ON pe.plantaEspecie_id = gc.plantaEspecie_id;"
+        const queryBusca = "SELECT up.userPlanta_id, up.userPlanta_nome, up.userPlanta_foto, up.data_plantio, up.ultima_rega, pe.plantaEspecie_nome, pe.plantaEspecie_descricao, gc.titulo, gc.conteudo FROM tb_userPlanta up INNER JOIN tb_plantaEspecie pe ON up.plantaEspecie_id = pe.plantaEspecie_id LEFT JOIN tb_guiaCuidado gc ON pe.plantaEspecie_id = gc.plantaEspecie_id;"
         try {
             let resultado = await operacoesGerais(queryBusca, [userId, idPlanta])
             if (!resultado[0] || resultado[0].length === 0) {
