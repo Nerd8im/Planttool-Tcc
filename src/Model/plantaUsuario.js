@@ -14,13 +14,13 @@ class PlantaUsuario {
     }
 
 
-    static async registrarPlanta(userId, especieId, nome, foto, plantio) {
+    static async registrarPlanta(userId, especieId, nome, foto, plantio,rega) {
 
         const userPlantaId = uuidv4() // Gera um UUID para o campo userPlanta_id
         const queryRegistro = `
             INSERT INTO tb_userPlanta 
-            (userPlanta_id, user_id, plantaEspecie_id, userPlanta_nome, userPlanta_foto, data_plantio) 
-            VALUES (?, ?, ?, ?, ?, ?)
+            (userPlanta_id, user_id, plantaEspecie_id, userPlanta_nome, userPlanta_foto, data_plantio, ultima_rega) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         `
 
         try {

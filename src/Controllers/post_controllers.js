@@ -104,6 +104,7 @@ export async function registrarEspecie(req, res) {
         const { especieId, nome } = req.body
 
         const plantio = new Date()
+        const rega = plantio
 
         if (!especieId || !nome) {
             return res.status(400).json({ erro: "Todos os campos são obrigatórios" })
@@ -126,6 +127,7 @@ export async function registrarEspecie(req, res) {
                 nome,
                 caminhoFoto,
                 plantio,
+                rega,
                 plantaId
             )
 
