@@ -14,7 +14,7 @@ class PlantaUsuario {
     }
 
 
-    static async registrarPlanta(userId, especieId, nome, foto, plantio,rega) {
+    static async registrarPlanta(userId, especieId, nome, foto, plantio, rega) {
 
         const userPlantaId = uuidv4() // Gera um UUID para o campo userPlanta_id
         const queryRegistro = `
@@ -24,7 +24,7 @@ class PlantaUsuario {
         `
 
         try {
-            const result = await operacoesGerais(queryRegistro, [userPlantaId, userId, especieId, nome, foto, plantio])
+            const result = await operacoesGerais(queryRegistro, [userPlantaId, userId, especieId, nome, foto, plantio, rega])
             if (!result || result.linhasAfetadas === 0) {
                 throw criarErro("Erro ao inserir planta no banco de dados", 500)
             }
