@@ -1,0 +1,612 @@
+tags:
+  - name: Usuário
+    description: Gerenciamento de usuários e autenticação
+
+  - name: Espécie
+    description: Gerenciamento do catálogo de espécies de plantas
+
+  - name: Planta Usuário
+    description: Gerenciamento das plantas individuais de um usuário
+
+  - name: Serviços Externos (IA/Clima)
+    description: Integrações com Gemini (IA) e Open-Meteo (Clima).
+
+paths:
+  /registrarUsuario:
+    post:
+      tags: [Usuário]
+      summary: Registra um novo usuário no sistema.
+      description: Cria uma nova conta de usuário com nome, sobrenome, email e senha.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UsuarioRegistro'
+      responses:
+        '200':
+          description: Usuário registrado com sucesso. Retorna um objeto de resposta.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: 'Usuário cadastrado com sucesso'
+        '400':
+          description: Dados inválidos, campos obrigatórios faltando ou usuário já existe.
+        '500':
+          description: Erro interno do servidor.
+
+  /login:
+    post:
+      tags: [Usuário]
+      summary: Autentica o usuário e retorna um token JWT.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredenciaisLogin'
+      responses:
+        '200':
+          description: Login bem-sucedido. Retorna o token JWT e dados do usuário.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Token JWT para autenticação em rotas protegidas.
+                  user:
+                    type: object
+                    description: Dados do usuário logado.
+        '400':
+          description: Campos 'email' ou 'senha' ausentes.
+        '401':
+          description: Credenciais inválidas (email ou senha incorretos).
+        '500':
+          description: Erro interno do servidor.
+
+  /deletarUsuario:
+    delete:
+      tags: [Usuário]
+      summary: Deleta a conta do usuário autenticado.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Usuário deletado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: 'Usuário deletado com sucesso.'
+        '401':
+          description: Não autorizado (token ausente ou inválido).
+        '500':
+          description: Erro interno ao tentar deletar o usuário ou dados relacionados.
+
+  /uploadImagem:
+    post:
+      tags: [Usuário]
+      summary: Faz upload de uma imagem pública genérica.
+      description: Rota para upload de imagens que não estão diretamente ligadas a perfil ou planta, com redimensionamento para no máximo 1024x1024.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                foto:
+                  type: string
+                  format: binary
+                  description: O arquivo de imagem (máx. 1024x1024, otimizado para JPEG 80%).
+      responses:
+        '200':
+          description: Imagem enviada com sucesso. Retorna o caminho onde foi salva.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: 'Imagem enviada com sucesso'
+                  caminho:
+                    type: string
+                    example: 'uploads/imagens_publicas/foto-167888999.jpg'
+        '400':
+          description: Imagem não enviada na requisição.
+        '401':
+          description: Não autorizado (token ausente ou inválido).
+        '500':
+          description: Erro no processamento da imagem ou upload.
+
+  /trocarFotoPerfil:
+    put:
+      tags: [Usuário]
+      summary: Altera a foto de perfil do usuário autenticado.
+      description: Substitui a foto de perfil existente do usuário, realizando otimização e exclusão da foto antiga.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                foto:
+                  type: string
+                  format: binary
+                  description: O novo arquivo de imagem para o perfil.
+      responses:
+        '200':
+          description: Foto de perfil atualizada. Retorna o novo caminho da imagem.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: 'uploads/foto_perfil/123e4567-e89b-12d3-a456-426614174000.jpg'
+        '400':
+          description: Imagem não enviada na requisição.
+        '401':
+          description: Não autorizado (token ausente ou inválido).
+        '500':
+          description: Erro no processamento da imagem ou update no DB.
+
+  /imagem/usuario/fotoperfil:
+    get:
+      tags: [Usuário]
+      summary: Retorna a foto de perfil do usuário autenticado.
+      description: Retorna o arquivo binário da foto de perfil.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Imagem retornada com sucesso.
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '401':
+          description: Não autorizado (token ausente ou inválido).
+        '404':
+          description: Imagem não encontrada.
+        '500':
+          description: Erro interno do servidor.
+
+  /registrarEspecie:
+    post:
+      tags: [Espécie]
+      summary: Registra uma nova espécie no catálogo.
+      description: Requer privilégios de administrador. (A segurança não está implementada nesta rota de exemplo, mas deveria)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+                - descricao
+                - cuidados
+                - classificacao
+                - rega
+              properties:
+                nome:
+                  type: string
+                  example: 'Cacto Mandacaru'
+                descricao:
+                  type: string
+                  example: 'Cacto nativo do Brasil...'
+                cuidados:
+                  type: string
+                  example: 'Sol pleno, pouca rega.'
+                classificacao:
+                  type: string
+                  example: 'Cactaceae'
+                rega:
+                  type: string
+                  example: '1 vez por mês'
+      responses:
+        '200':
+          description: Espécie registrada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: 'Espécie cadastrada com sucesso'
+        '400':
+          description: Campos obrigatórios ausentes.
+        '500':
+          description: Erro ao tentar registrar a espécie.
+
+  /especies:
+    get:
+      tags: [Espécie]
+      summary: Retorna todas as espécies cadastradas.
+      description: Lista todas as espécies de plantas no catálogo.
+      responses:
+        '200':
+          description: Lista de espécies retornada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Especie'
+        '500':
+          description: Erro ao buscar espécies de plantas.
+
+  /especies/imagem/{id}:
+    get:
+      tags: [Espécie]
+      summary: Retorna a imagem de uma espécie.
+      description: Busca o arquivo de imagem associado a uma espécie pelo seu ID.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Imagem retornada com sucesso.
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Espécie ou imagem não encontrada.
+        '500':
+          description: Erro interno do servidor.
+
+  /especies/{classificaoId}:
+    get:
+      tags: [Espécie]
+      summary: Retorna espécies por classificação botânica.
+      description: Lista espécies filtradas por Classification ID.
+      parameters:
+        - in: path
+          name: classificaoId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de espécies retornada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Especie'
+        '404':
+          description: Nenhuma espécie encontrada para esta classificação.
+        '500':
+          description: Erro interno do servidor.
+
+  /registrarPlanta:
+    post:
+      tags: [Planta Usuário]
+      summary: Adiciona uma nova planta para o usuário autenticado.
+      description: Registra uma nova instância de planta associada a uma espécie do catálogo.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [especieId, nome]
+              properties:
+                especieId:
+                  type: integer
+                  example: 1
+                nome:
+                  type: string
+                  example: 'Minha Jiboia'
+                foto:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Planta registrada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: 'Planta registrado com sucesso'
+                  planta:
+                    $ref: '#/components/schemas/PlantaUsuario'
+        '400':
+          description: Dados inválidos ou campos obrigatórios faltando.
+        '401':
+          description: Não autorizado.
+        '500':
+          description: Erro no registro da planta.
+
+  /PlantasUsuario:
+    get:
+      tags: [Planta Usuário]
+      summary: Retorna todas as plantas do usuário autenticado.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista de plantas do usuário ou mensagem de nenhuma planta cadastrada.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/PlantaUsuario'
+                  - type: object
+                    properties:
+                      erro:
+                        type: string
+                        example: 'Nenhuma planta cadastrada'
+        '401':
+          description: Não autorizado.
+        '500':
+          description: Erro ao buscar plantas do usuário.
+
+  /plantaUsuario/{id}:
+    get:
+      tags: [Planta Usuário]
+      summary: Retorna os detalhes de uma planta específica do usuário.
+      description: Retorna os detalhes da planta, incluindo o caminho da imagem no servidor, se existir.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Detalhes da planta encontrados.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlantaUsuario'
+        '400':
+          description: ID da planta não fornecido.
+        '401':
+          description: Não autorizado ou planta não pertence ao usuário.
+        '404':
+          description: Planta não encontrada.
+        '500':
+          description: Erro ao buscar planta.
+
+  /plantaUsuario/imagem/{id}:
+    get:
+      tags: [Planta Usuário]
+      summary: Retorna o arquivo binário da imagem de uma planta específica do usuário.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Imagem da planta (Arquivo binário).
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: ID da planta não fornecido.
+        '401':
+          description: Não autorizado ou planta não pertence ao usuário.
+        '404':
+          description: Planta ou imagem não encontrada.
+
+  /plantaUsuario/alterarImagem/{id}:
+    put:
+      tags: [Planta Usuário]
+      summary: Altera a imagem de uma planta específica do usuário.
+      description: Permite ao usuário substituir a foto de uma planta, realizando otimização e exclusão da foto antiga.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                foto:
+                  type: string
+                  format: binary
+                  description: A nova foto da planta.
+      responses:
+        '200':
+          description: Imagem da planta atualizada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: 'Imagem da planta atualizada com sucesso!'
+                  caminho:
+                    type: string
+                    example: 'uploads/plantas/planta-abc-def.jpg'
+        '400':
+          description: ID não informado ou imagem não enviada.
+        '401':
+          description: Não autorizado.
+        '500':
+          description: Erro ao atualizar.
+
+  /plantaUsuario/regar/{id}:
+    post:
+      tags: [Planta Usuário]
+      summary: Marca a planta como regada.
+      description: Atualiza o campo 'ultimaRega' da planta para o horário atual.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Planta regada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: 'Planta regada com sucesso.'
+                  ultimaRega:
+                    type: string
+                    format: date-time
+        '401':
+          description: Não autorizado.
+        '404':
+          description: Planta não encontrada.
+        '500':
+          description: Erro interno ao atualizar.
+
+  /plantaUsuario/deletar/{id}:
+    delete:
+      tags: [Planta Usuário]
+      summary: Deleta uma planta específica do usuário.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Planta deletada com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: 'Planta deletada com sucesso.'
+        '401':
+          description: Não autorizado.
+        '404':
+          description: Planta não encontrada.
+        '500':
+          description: Erro interno ao deletar.
+
+  /gemini:
+    post:
+      tags: [Serviços Externos (IA/Clima)]
+      summary: Envia uma imagem privada para análise pela IA (Gemini).
+      description: Recebe uma imagem e um prompt para análise da IA.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - foto
+              properties:
+                foto:
+                  type: string
+                  format: binary
+                prompt:
+                  type: string
+                  description: Instruções para a IA.
+      responses:
+        '200':
+          description: Análise da imagem retornada pela IA.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  descricao:
+                    type: string
+                    example: 'A análise indica deficiência de nitrogênio...'
+        '400':
+          description: Imagem não enviada.
+        '401':
+          description: Não autorizado.
+        '500':
+          description: Erro na IA ou comunicação.
+
+  /clima:
+    get:
+      tags: [Serviços Externos (IA/Clima)]
+      summary: Retorna informações climáticas atuais baseadas em coordenadas.
+      description: Utiliza a API Open-Meteo.
+      parameters:
+        - in: query
+          name: latitude
+          required: true
+          schema:
+            type: number
+            format: float
+        - in: query
+          name: longitude
+          required: true
+          schema:
+            type: number
+            format: float
+      responses:
+        '200':
+          description: Dados climáticos processados retornados com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClimaResposta'
+        '400':
+          description: Latitude ou longitude ausentes.
+        '500':
+          description: Erro ao obter dados do clima.
