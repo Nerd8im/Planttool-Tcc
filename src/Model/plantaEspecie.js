@@ -50,7 +50,7 @@ class EspeciePlanta {
 
     static async buscarEspeciesPorClassificacao(classificacaoID){
 
-        const query = "SELECT * FROM tb_plantaEspecie WHERE classificacao_id = ?"
+        const query = "SELECT * FROM tb_plantaEspecie WHERE plantaEspecie_id = ?"
 
         try {
             let [resultado] = await operacoesGerais(query, [classificacaoID])

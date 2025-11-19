@@ -26,7 +26,7 @@ export async function trocarFotoPerfil(req, res) {
                 .resize({ width: 1024, height: 1024, fit: "inside" })
                 .jpeg({ quality: 80 })
                 .toFile(caminhoFinal)
-                fs.unlinkSync(caminhoOriginal)
+                await fs.promises.unlink(caminhoOriginal)
         } else {
             fs.renameSync(caminhoOriginal, caminhoFinal)
         }

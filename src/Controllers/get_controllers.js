@@ -195,7 +195,7 @@ export async function climaAtual(req, res) {
   try {
     // 🔹 Corrigido o URL — agora usa "&longitude=" corretamente
     const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weather_code,temperature_2m_min,temperature_2m_max,daylight_duration,sunshine_duration,rain_sum,snowfall_sum,sunrise,sunset&hourly=weather_code,cloud_cover,rain,precipitation,precipitation_probability,apparent_temperature,temperature_80m&current=precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,apparent_temperature,relative_humidity_2m,temperature_2m`
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude && 23.55}&longitude=${longitude && 46.63}&daily=weather_code,temperature_2m_min,temperature_2m_max,daylight_duration,sunshine_duration,rain_sum,snowfall_sum,sunrise,sunset&hourly=weather_code,cloud_cover,rain,precipitation,precipitation_probability,apparent_temperature,temperature_80m&current=precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,apparent_temperature,relative_humidity_2m,temperature_2m`
     );
 
     if (!response.ok) {

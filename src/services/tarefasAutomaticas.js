@@ -25,11 +25,11 @@ async function verificarPlantasParaRegar() {
             }
         }
 
-        if (plantasParaRegar.length > 0) {
-            console.log("Plantas que precisam ser regadas:", plantasParaRegar)
-        } else {
-            console.log("Nenhuma planta precisa ser regada agora.")
-        }
+        // if (plantasParaRegar.length > 0) {
+        //     console.log("Plantas que precisam ser regadas:", plantasParaRegar)
+        // } else {
+        //     console.log("Nenhuma planta precisa ser regada agora.")
+        // }
         return plantasParaRegar
     } catch (error) {
         console.error("Erro ao verificar plantas para regar:", error)
