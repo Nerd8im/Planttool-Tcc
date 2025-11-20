@@ -5,6 +5,7 @@ import { criarErro } from "../utils/erros.js";
 import { processarClima } from "../utils/processaClima.js";
 import EspeciePlanta from "../Model/plantaEspecie.js"
 import PlantaUsuario from "../Model/plantaUsuario.js";
+import GuiaCuidados from "../Model/guiaCuidado.js";
 import { stringify } from "querystring";
 
 export async function pegarImagemUsuario(req, res) {
@@ -188,27 +189,44 @@ export async function buscarEspeciePorclassificao(req, res) {
 }
 
 export async function climaAtual(req, res) {
-  const { latitude, longitude } = req.query;
+    const { latitude, longitude } = req.query;
 
-  console.log("pedido de para:", latitude, longitude);
+    console.log("pedido de para:", latitude, longitude);
 
-  try {
-    // 🔹 Corrigido o URL — agora usa "&longitude=" corretamente
-    const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude && 23.55}&longitude=${longitude && 46.63}&daily=weather_code,temperature_2m_min,temperature_2m_max,daylight_duration,sunshine_duration,rain_sum,snowfall_sum,sunrise,sunset&hourly=weather_code,cloud_cover,rain,precipitation,precipitation_probability,apparent_temperature,temperature_80m&current=precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,apparent_temperature,relative_humidity_2m,temperature_2m`
-    );
+    try {
+        // 🔹 Corrigido o URL — agora usa "&longitude=" corretamente
+        const response = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${latitude && 23.55}&longitude=${longitude && 46.63}&daily=weather_code,temperature_2m_min,temperature_2m_max,daylight_duration,sunshine_duration,rain_sum,snowfall_sum,sunrise,sunset&hourly=weather_code,cloud_cover,rain,precipitation,precipitation_probability,apparent_temperature,temperature_80m&current=precipitation,rain,showers,snowfall,weather_code,cloud_cover,is_day,apparent_temperature,relative_humidity_2m,temperature_2m`
+        );
 
-    if (!response.ok) {
-      throw new Error("Erro ao buscar dados climáticos");
+        if (!response.ok) {
+            throw new Error("Erro ao buscar dados climáticos");
+        }
+
+        const climaDados = await response.json();
+
+        const clima = processarClima(climaDados);
+
+        return res.status(200).json(clima);
+    } catch (error) {
+        console.error("❌ Erro no climaAtual:", error.message);
+        return res.status(500).json({ error: "Erro ao obter dados do clima" });
+    }
+}
+export async function buscarGuiaCuidado(req, res) {
+    const idEspecie = req.params.id
+    if (!idEspecie) {
+        return res.status(400).json({ erro: "ID da espécie não fornecido" })
     }
 
-    const climaDados = await response.json();
-
-    const clima = processarClima(climaDados);
-
-    return res.status(200).json(clima);
-  } catch (error) {
-    console.error("❌ Erro no climaAtual:", error.message);
-    return res.status(500).json({ error: "Erro ao obter dados do clima" });
-  }
+    try {
+        let guiaCuidado = await GuiaCuidados.buscarGuiaPorEspecie(idEspecie)
+        if (!guiaCuidado) {
+            return res.status(404).json({ erro: "Guia de cuidado não encontrado" })
+        }
+        return res.status(200).json(guiaCuidado)
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ erro: "Erro ao buscar guia de cuidado" })
+    }
 }

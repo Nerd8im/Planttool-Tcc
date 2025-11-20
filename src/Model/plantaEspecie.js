@@ -1,8 +1,6 @@
-import { conexao } from "../DAO/conexao.js"
 import { operacoesGerais } from "../DAO/operacoesDB.js"
 import { criarErro } from "../utils/erros.js"
 
-const pool = await conexao()
 
 class EspeciePlanta {
     constructor(id, nome, descricao, cuidados, classificacao, rega, caminhoFoto) {

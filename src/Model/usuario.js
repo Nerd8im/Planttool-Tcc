@@ -117,6 +117,18 @@ class Usuario {
         }
     }
 
+    async alterarDadosUsuario(novoNome, novoSobrenome, novoEmail) {
+        const query = `UPDATE tb_user SET user_nome = ?, user_sobrenome = ?, user_email = ? WHERE user_id = ?`
+
+        try {
+            await operacoesGerais(query, [novoNome, novoSobrenome, novoEmail, this.id])
+        } catch (error) {
+            console.log(error)
+            throw criarErro("Erro ao atualizar foto de perfil", 500)
+        }
+        
+    }
+
     async buscarPlantasUsuario() {
 
         const query = `SELECT * FROM tb_userPlanta WHERE user_id = ?`

@@ -19,7 +19,7 @@ export async function registrarUsuario(req, res) {
 
     } catch (error) {
         console.error(error)
-        res.status(error.statusCode || 500).json({ erro: error.message})
+        res.status(error.statusCode || 500).json({ erro: error.message })
     }
 
 }
@@ -99,47 +99,47 @@ export async function registrarEspecie(req, res) {
 }
 
 //PlantaUsuario
-    export async function registrarPlanta(req, res) {
-        const userId = req.usuario.user_id
-        const { especieId, nome } = req.body
+export async function registrarPlanta(req, res) {
+    const userId = req.usuario.user_id
+    const { especieId, nome } = req.body
 
-        const plantio = new Date()
-        const rega = plantio
+    const plantio = new Date()
+    const rega = plantio
 
-        if (!especieId || !nome) {
-            return res.status(400).json({ erro: "Todos os campos são obrigatórios" })
-        }
-
-        try {
-
-            const plantaId = uuidv4()
-            req.plantaId = plantaId
-
-            const caminhoFoto = req.file ? path.relative(process.cwd(), req.file.path) : null
-
-            // if (!req.file) {
-            //     return res.status(400).json({ erro: "Imagem não enviada" })
-            // }
-
-            const respostaRegistro = await PlantaUsuario.registrarPlanta(
-                userId,
-                especieId,
-                nome,
-                caminhoFoto,
-                plantio,
-                rega,
-                plantaId
-            )
-
-            return res.status(200).json({
-                mensagem: "Planta registrada com sucesso",
-                planta: respostaRegistro,
-            })
-        } catch (error) {
-            console.error("Erro ao registrar planta:", error)
-            return res.status(500).json({ erro: "Erro ao registrar planta" })
-        }
+    if (!especieId || !nome) {
+        return res.status(400).json({ erro: "Todos os campos são obrigatórios" })
     }
+
+    try {
+
+        const plantaId = uuidv4()
+        req.plantaId = plantaId
+
+        const caminhoFoto = req.file ? path.relative(process.cwd(), req.file.path) : null
+
+        // if (!req.file) {
+        //     return res.status(400).json({ erro: "Imagem não enviada" })
+        // }
+
+        const respostaRegistro = await PlantaUsuario.registrarPlanta(
+            userId,
+            especieId,
+            nome,
+            caminhoFoto,
+            plantio,
+            rega,
+            plantaId
+        )
+
+        return res.status(200).json({
+            mensagem: "Planta registrada com sucesso",
+            planta: respostaRegistro,
+        })
+    } catch (error) {
+        console.error("Erro ao registrar planta:", error)
+        return res.status(500).json({ erro: "Erro ao registrar planta" })
+    }
+}
 
 
 export async function analiseGemni(req, res) {
@@ -159,5 +159,20 @@ export async function analiseGemni(req, res) {
         console.error("Erro ao gerar descrição com Gemini:", error)
         return criarErro("Erro ao analisar imagem", 500)
 
+    }
+}
+
+export async function registrarGuiaCuidado(req, res) {
+    const { id } = req.params
+    const { titulo, conteudo } = req.body
+    if (!id || !titulo || !conteudo) {
+        return res.status(400).json({ erro: "Todos os campos são obrigatórios" })
+    }
+    try {
+        let resposta = await GuiaCuidados.registrarGuia(id, titulo, conteudo)
+        return res.status(200).json({ mensagem: resposta })
+    } catch (error) {
+        console.error("Erro ao registrar guia de cuidado:", error)
+        return res.status(500).json({ erro: "Erro ao registrar guia de cuidado" })
     }
 }
