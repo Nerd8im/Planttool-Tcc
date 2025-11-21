@@ -20,13 +20,8 @@ export async function registrarUsuario(req, res) {
         res.status(200).json(resposta)
 
     } catch (error) {
-<<<<<<< HEAD
         console.error("Erro ao registrar usuário:", error)
         res.status(error.statusCode || 500).json({ erro: error.message})
-=======
-        console.error(error)
-        res.status(error.statusCode || 500).json({ erro: error.message })
->>>>>>> 652a9a7 (Guia cuidados adicionad)
     }
 
 }
@@ -116,49 +111,12 @@ export async function registrarPlanta(req, res) {
     const plantio = new Date()
     const rega = plantio
 
-<<<<<<< HEAD
-        if (!especieId || !nome) {
-            return res.status(400).json({ erro: "Todos os campos são obrigatórios" })
-        }
-        console.log("Tentanto registrar a planta do usuário...")
-        try {
-
-            const plantaId = uuidv4()
-            req.plantaId = plantaId
-
-            const caminhoFoto = req.file ? path.relative(process.cwd(), req.file.path) : null
-
-            // if (!req.file) {
-            //     return res.status(400).json({ erro: "Imagem não enviada" })
-            // }
-
-            const respostaRegistro = await PlantaUsuario.registrarPlanta(
-                userId,
-                especieId,
-                nome,
-                caminhoFoto,
-                plantio,
-                rega,
-                plantaId
-            )
-
-            console.log("Planta do usuário registrada com sucesso.")
-            return res.status(200).json({
-                mensagem: "Planta registrada com sucesso",
-                planta: respostaRegistro,
-            })
-        } catch (error) {
-            console.error("Erro ao registrar planta:", error)
-            return res.status(500).json({ erro: "Erro ao registrar planta" })
-        }
-=======
     if (!especieId || !nome) {
         return res.status(400).json({ erro: "Todos os campos são obrigatórios" })
->>>>>>> 652a9a7 (Guia cuidados adicionad)
     }
 
+    console.log("Tentanto registrar a planta do usuário...")
     try {
-
         const plantaId = uuidv4()
         req.plantaId = plantaId
 
@@ -178,6 +136,7 @@ export async function registrarPlanta(req, res) {
             plantaId
         )
 
+        console.log("Planta do usuário registrada com sucesso.")
         return res.status(200).json({
             mensagem: "Planta registrada com sucesso",
             planta: respostaRegistro,

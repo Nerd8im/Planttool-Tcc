@@ -4,8 +4,6 @@ import { criarErro } from "../utils/erros.js"
 import sharp from "sharp"
 import fs from "fs"
 import path from "path"
-
-
 // Usuário
 export async function alterarDadosUsuario(req, res) {
 
@@ -86,19 +84,9 @@ export async function alterarDadosUsuario(req, res) {
         }
     }
 
-<<<<<<< HEAD
-    const caminhoOriginal = req.file.path
-    /* mudei aqui pra foto ser apenas o id do usuário. Obs: esse path é bizonho de útil */
-    const caminhoFinal = path.join(path.dirname(caminhoOriginal), id.concat(path.extname(req.file.originalname)))
-
-    console.log("Tentanto trocar foto de perfil...")
-    try {
-        const metadata = await sharp(caminhoOriginal).metadata()
-=======
     //planta do usuário
     export async function alterarImagemPlanta(req, res) {
         const idPlanta = req.params.id
->>>>>>> 652a9a7 (Guia cuidados adicionad)
 
         if (!idPlanta) {
             throw criarErro("ID da planta não informado", 400)
@@ -127,67 +115,6 @@ export async function alterarDadosUsuario(req, res) {
                 fs.renameSync(caminhoOriginal, caminhoFinal)
             }
 
-<<<<<<< HEAD
-        console.log("Foto de perfil atualizada com sucesso.")
-
-        res.status(200).json(caminhoFinal)
-    } catch (error) {
-        console.error("Erro ao trocar foto de perfil:", error)
-        res.status(error.statusCode || 500).json({ erro: error.message })
-    }
-}
-
-//planta do usuário
-export async function alterarImagemPlanta(req, res) {
-    const idPlanta = req.params.id
-
-    if (!idPlanta) {
-        throw criarErro("ID da planta não informado", 400)
-    }
-
-    if (!req.file) {
-        throw criarErro("Imagem não enviada", 400)
-    }
-
-    const caminhoOriginal = req.file.path
-    const caminhoFinal = path.join(
-        path.dirname(caminhoOriginal),
-        idPlanta.concat(path.extname(req.file.originalname))
-    )
-
-    console.log("Tentanto alterar imagem da planta...")
-    try {
-        const metadata = await sharp(caminhoOriginal).metadata()
-
-        if (metadata.width > 1024 || metadata.height > 1024) {
-            await sharp(caminhoOriginal)
-                .resize({ width: 1024, height: 1024, fit: "inside" })
-                .jpeg({ quality: 80 })
-                .toFile(caminhoFinal)
-            fs.unlinkSync(caminhoOriginal)
-        } else {
-            fs.renameSync(caminhoOriginal, caminhoFinal)
-        }
-
-        fs.readdir(path.dirname(caminhoFinal), (err, files) => {
-            if (err) throw err
-            files.forEach(file => {
-                if (file.startsWith(idPlanta) && file !== path.basename(caminhoFinal)) {
-                    fs.unlink(path.join(path.dirname(caminhoFinal), file), err => {
-                        if (err) throw err
-                    })
-                }
-            })
-        })
-        
-        await PlantaUsuario.alterarFoto(idPlanta, caminhoFinal)
-        
-        console.log("Imagem da planta atualizada.")
-        res.status(200).json({ mensagem: "Imagem da planta atualizada com sucesso!", caminho: caminhoFinal })
-    } catch (error) {
-        console.error("problema ao alterar imagem da planta:", error)
-        res.status(error.statusCode || 500).json({ erro: error.message })
-=======
             fs.readdir(path.dirname(caminhoFinal), (err, files) => {
                 if (err) throw err
                 files.forEach(file => {
@@ -207,5 +134,4 @@ export async function alterarImagemPlanta(req, res) {
             console.error(error)
             res.status(error.statusCode || 500).json({ erro: error.message })
         }
->>>>>>> 652a9a7 (Guia cuidados adicionad)
     }

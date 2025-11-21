@@ -1,4 +1,4 @@
-import { operacoesGerais } from "../DAO/operacoesDB"
+import { operacoesGerais } from "../DAO/operacoesDB.js"
 
 class GuiaCuidados {
     constructor(id, idEspeciePlanta, titulo, conteudo) {
@@ -39,4 +39,4 @@ class GuiaCuidados {
 
 }
 
-export default GuiaCuidados
+export default {GuiaCuidados}
