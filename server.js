@@ -13,7 +13,7 @@ import { pegarImagemPlanta, buscarEspeciePorclassificao, buscarPlantaId, pegarIm
 import { setupSwagger } from './src/documentacao/swaggerConfig.js'
 
 const app = express()
-const porta = process.env.PORT || 8080
+const porta = process.env.PORT || 3000
 const rota = '/planttool/v1'
 
 // --- Middlewares de Upload específicos para cada rota ---
@@ -89,4 +89,5 @@ app.get(`${rota}/clima`, climaAtual)
 app.listen(porta, "0.0.0.0",() => {
     console.log(`Servidor rodando em http://localhost:${porta}${rota}`)
     console.log(`Documentação disponível em: http://localhost:${porta}/api-docs`)
+
 })
