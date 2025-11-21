@@ -53,17 +53,12 @@ INSERT INTO tb_plantaEspecie (plantaEspecie_nome, plantaEspecie_descricao, plant
 
 
 CREATE TABLE tb_guiaCuidado (
-    guia_id INT AUTO_INCREMENT PRIMARY KEY,
+    guia_id INT NOT NULL PRIMARY KEY,
     plantaEspecie_id INT,
     titulo VARCHAR(244),
     conteudo TEXT,
     FOREIGN KEY (plantaEspecie_id) REFERENCES tb_plantaEspecie(plantaEspecie_id)
 );
-
-
-INSERT INTO tb_guiaCuidado (plantaEspecie_id, titulo, conteudo) VALUES
-(1, 'Cuidados com Ficus lyrata', 'Regue duas vezes por semana e mantenha próximo a janelas.'),
-(2, 'Guia para Pinus elliottii', 'Evite solo encharcado. Adube a cada 3 meses.');
 
 
 CREATE TABLE tb_userPlanta (

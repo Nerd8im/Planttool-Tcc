@@ -3,17 +3,17 @@ import 'dotenv/config.js'
 import cors from "cors"
 // import "./src/services/tarefasAutomaticas.js" // Manter se for necessário
 import autenticarToken from "./src/middlewares/autenticarToken.js"
-import { login, postarImagem, registrarUsuario, registrarEspecie, registrarPlanta, analiseGemni } from "./src/Controllers/post_controllers.js"
-import { trocarFotoPerfil, alterarImagemPlanta} from "./src/Controllers/put_controllers.js"
-import { deletarUsuario, deletarPlantaUsuario } from "./src/Controllers/delete_controllers.js"
+import { login, postarImagem, registrarUsuario, registrarEspecie, registrarPlanta, analiseGemni, registrarGuiaCuidado } from "./src/Controllers/post_controllers.js"
+import { trocarFotoPerfil, alterarDadosUsuario, alterarImagemPlanta} from "./src/Controllers/put_controllers.js"
+import { deletarUsuario, deletarPlantaUsuario, deletarGuiaCuidado } from "./src/Controllers/delete_controllers.js"
 import { uploadImagem } from "./src/middlewares/uploadImagem.js"
-import { pegarImagemPlanta, buscarEspeciePorclassificao, buscarPlantaId, pegarImagemUsuario, buscarEspecies, buscarPlantasUsuario, buscarImagemEspecie, climaAtual} from "./src/Controllers/get_controllers.js"
+import { pegarImagemPlanta, buscarEspeciePorclassificao, buscarPlantaId, pegarImagemUsuario, buscarEspecies, buscarPlantasUsuario, buscarImagemEspecie, climaAtual, buscarGuiaCuidado} from "./src/Controllers/get_controllers.js"
 
 // --- Importação da Configuração do Swagger ---
 import { setupSwagger } from './src/documentacao/swaggerConfig.js'
 
 const app = express()
-const porta = 3000
+const porta = process.env.PORT || 3000
 const rota = '/planttool/v1'
 
 // --- Middlewares de Upload específicos para cada rota ---
@@ -47,6 +47,7 @@ app.post(`${rota}/login`, login)
 app.delete(`${rota}/deletarUsuario`, autenticarToken, deletarUsuario)
 app.post(`${rota}/uploadImagem`, autenticarToken, uploadImagemPublica, postarImagem)
 app.put(`${rota}/trocarFotoPerfil`, autenticarToken, uploadFotoPerfil, trocarFotoPerfil)
+app.put(`${rota}/alterarDadosUsuario`, autenticarToken, alterarDadosUsuario)
 app.get(`${rota}/imagem/usuario/fotoperfil`, autenticarToken, pegarImagemUsuario)
 
 // -------------------------
@@ -67,6 +68,13 @@ app.get(`${rota}/plantaUsuario/imagem/:id`, autenticarToken, pegarImagemPlanta)
 app.put(`${rota}/plantaUsuario/alterarImagem/:id`, autenticarToken, uploadFotoPlanta, alterarImagemPlanta)
 app.post(`${rota}/plantaUsuario/regar/:id`, autenticarToken,)
 app.delete(`${rota}/plantaUsuario/deletar/:id`, autenticarToken, deletarPlantaUsuario)
+
+// ------------------------------
+// --- Rotas de Guias de Cuidado ---
+// ------------------------------
+app.get(`${rota}/especies/guia/:id`, autenticarToken, buscarGuiaCuidado)
+app.post(`${rota}/especies/guia/:id`, autenticarToken, registrarGuiaCuidado)
+app.delete(`${rota}/especies/guia/deletar/:id`, autenticarToken, deletarGuiaCuidado)
 
 // -------------------------
 // --- Rotas de IA e Clima ---
