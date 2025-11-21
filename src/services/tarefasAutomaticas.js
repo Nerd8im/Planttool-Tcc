@@ -2,7 +2,7 @@ import cron from "node-cron"
 import { operacoesGerais } from "../DAO/operacoesDB.js"
 
 // Função para verificar plantas que precisam ser regadas
-async function verificarPlantasParaRegar() {
+export async function verificarPlantasParaRegar() {
     const query = `
         SELECT up.userPlanta_id, up.userPlanta_nome, up.ultima_rega, pe.plantaEspecie_intervalo_rega_horas
         FROM tb_userPlanta up

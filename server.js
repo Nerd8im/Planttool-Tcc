@@ -8,6 +8,7 @@ import { trocarFotoPerfil, alterarDadosUsuario, alterarImagemPlanta} from "./src
 import { deletarUsuario, deletarPlantaUsuario, deletarGuiaCuidado } from "./src/Controllers/delete_controllers.js"
 import { uploadImagem } from "./src/middlewares/uploadImagem.js"
 import { pegarImagemPlanta, buscarEspeciePorclassificao, buscarPlantaId, pegarImagemUsuario, buscarEspecies, buscarPlantasUsuario, buscarImagemEspecie, climaAtual, buscarGuiaCuidado} from "./src/Controllers/get_controllers.js"
+import { verificarPlantasParaRegar } from "./src/services/tarefasAutomaticas.js"
 
 // --- Importação da Configuração do Swagger ---
 import { setupSwagger } from './src/documentacao/swaggerConfig.js'
@@ -66,7 +67,7 @@ app.get(`${rota}/PlantasUsuario`, autenticarToken, buscarPlantasUsuario)
 app.get(`${rota}/plantaUsuario/:id`, autenticarToken, buscarPlantaId)
 app.get(`${rota}/plantaUsuario/imagem/:id`, autenticarToken, pegarImagemPlanta)
 app.put(`${rota}/plantaUsuario/alterarImagem/:id`, autenticarToken, uploadFotoPlanta, alterarImagemPlanta)
-app.post(`${rota}/plantaUsuario/regar/:id`, autenticarToken,)
+app.post(`${rota}/plantaUsuario/regar/:id`, autenticarToken, verificarPlantasParaRegar)
 app.delete(`${rota}/plantaUsuario/deletar/:id`, autenticarToken, deletarPlantaUsuario)
 
 // ------------------------------
