@@ -37,4 +37,10 @@ export async function verificarPlantasParaRegar() {
 }
 
 // Agendado para rodar a cada 1 minuto
-cron.schedule("* * * * *", verificarPlantasParaRegar)
+cron.schedule("* * * * *", async () => {
+    try {
+        await verificarPlantasParaRegar()
+    } catch (err) {
+        console.error("Erro ao executar tarefa cron:", err)
+    }
+})

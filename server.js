@@ -1,13 +1,13 @@
 import express from "express"
 import 'dotenv/config.js'
 import cors from "cors"
+import './src/services/tarefasAutomaticas.js' // Somente para ativar o cron
 import autenticarToken from "./src/middlewares/autenticarToken.js"
 import { login, postarImagem, registrarUsuario, registrarEspecie, registrarPlanta, analiseGemni, registrarGuiaCuidado } from "./src/Controllers/post_controllers.js"
 import { trocarFotoPerfil, alterarDadosUsuario, alterarImagemPlanta} from "./src/Controllers/put_controllers.js"
 import { deletarUsuario, deletarPlantaUsuario, deletarGuiaCuidado } from "./src/Controllers/delete_controllers.js"
 import { uploadImagem } from "./src/middlewares/uploadImagem.js"
 import { pegarImagemPlanta, buscarEspeciePorclassificao, buscarPlantaId, pegarImagemUsuario, buscarEspecies, buscarPlantasUsuario, buscarImagemEspecie, climaAtual, buscarGuiaCuidado} from "./src/Controllers/get_controllers.js"
-// import { verificarPlantasParaRegar } from "./src/services/tarefasAutomaticas.js"
 
 // --- Importação da Configuração do Swagger ---
 import { setupSwagger } from './src/documentacao/swaggerConfig.js'
