@@ -86,7 +86,7 @@ app.get(`${rota}/clima`, climaAtual)
 // === INICIALIZAÇÃO DO SERVIDOR =====================================
 // =================================================================
 
-app.listen(porta, () => {
+app.listen(porta, "0.0.0.0",() => {
     console.log(`Servidor rodando em http://localhost:${porta}${rota}`)
     console.log(`Documentação disponível em: http://localhost:${porta}/api-docs`)
 })
