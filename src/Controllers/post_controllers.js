@@ -154,19 +154,19 @@ export async function analiseGemni(req, res) {
         throw criarErro("Imagem não enviada", 400)
     }
 
-    const caminhoOriginal = req.file.path
-    const caminhoFinal = path.relative(process.cwd(), req.file.path)
+   try {
+        const imageBuffer = fs.readFileSync(req.file.path);
 
-    const imageBuffer = fs.readFileSync(caminhoFinal)
-    console.log("Imagem lida para análise com Gemini.")
-    try {
-        const descricao = await geminiAPI(texto ,imageBuffer)
-        console.log("Descrição gerada com sucesso.")
-        return res.status(200).json({ descricao: descricao })
+        console.log("Imagem lida para análise com Gemini.");
+
+        const descricao = await geminiAPI(texto, imageBuffer);
+
+        console.log("Descrição gerada com sucesso.");
+
+        return res.status(200).json({ descricao });
     } catch (error) {
-        console.error("Erro ao gerar descrição com Gemini:", error)
-        return criarErro("Erro ao analisar imagem", 500)
-
+        console.error("Erro ao gerar descrição com Gemini:", error);
+        return res.status(500).json({ erro: "Erro ao analisar imagem" });
     }
 }
 
