@@ -5,7 +5,7 @@ import { criarErro } from "../utils/erros.js";
 import { processarClima } from "../utils/processaClima.js";
 import EspeciePlanta from "../Model/plantaEspecie.js"
 import PlantaUsuario from "../Model/plantaUsuario.js";
-import GuiaCuidados from "../Model/guiaCuidado.js";
+import GuiaCuidados from "../Model/guiasCuidado.js";
 import { stringify } from "querystring";
 
 export async function pegarImagemUsuario(req, res) {
@@ -16,11 +16,12 @@ export async function pegarImagemUsuario(req, res) {
     if (!caminhoImagem) {
         return res.status(404).json({ erro: "Imagem não encontrada" })
     }
-
+    console.log("Salvando imagem do usuário...")
     try {
+        console.log("Imagem encontrada, enviando ao cliente...")
         return res.status(200).sendFile(path.resolve(caminhoImagem))
     } catch (error) {
-        console.error(error)
+        console.error("Probema ao buscar imagem do usuário:", error)
         res.status(error.statusCode || 500).json({ erro: error.message })
     }
 }
@@ -29,8 +30,10 @@ export async function pegarImagemUsuario(req, res) {
 
 export async function buscarPlantasUsuario(req, res) {
 
+    console.log("Tentanto buscar plantas do usuário...")
     try {
         if (!req.usuario || !req.usuario.user_id) {
+            console.log("Usuário não autenticado tentou acessar as plantas.")
             return res.status(401).json({ erro: "Usuário não autenticado" })
         }
 
@@ -47,7 +50,7 @@ export async function buscarPlantasUsuario(req, res) {
         if (!plantasUsuario || plantasUsuario.length === 0) {
             return res.status(200).json({ erro: "Nenhuma planta cadastrada" })
         }
-
+        console.log("Plantas do usuário encontradas. Enviando ao cliente.")
         return res.status(200).json(plantasUsuario);
 
     } catch (error) {
@@ -65,10 +68,11 @@ export async function buscarImagemEspecie(req, res) {
         if (!caminhoImagem) {
             return res.status(404).json({ erro: "Imagem não encontrada" })
         }
-
+        console.log("Imagem da espécie encontrada, enviando ao cliente...")
         return res.status(200).sendFile(path.resolve(caminhoImagem))
     } catch (error) {
-        console.log(error)
+        console.log("Probema ao buscar imagem da espécie:", error)
+        return res.status(404).json({ erro: "Erro ao buscar imagem da espécie" })
     }
 }
 
@@ -82,6 +86,7 @@ export async function buscarPlantaId(req, res) {
         return res.status(400).json({ erro: "ID da planta não fornecido" })
     }
 
+    console.log("Tentanto buscar planta do usuário...")
     try {
         const planta = await PlantaUsuario.buscarPlantaId(userId, idPlanta)
         console.log("Planta encontrada:", planta)
@@ -124,7 +129,7 @@ export async function pegarImagemPlanta(req, res) {
     if (!req.idPlanta) {
         return res.status(400).json({ erro: "ID da planta não fornecido" })
     }
-
+    console.log("Tentanto buscar imagem da planta...")
     try {
         let planta = await PlantaUsuario.buscarPlantaId(req.idUsuario, req.idPlanta)
         console.log(planta)
@@ -137,12 +142,12 @@ export async function pegarImagemPlanta(req, res) {
         if (!fs.existsSync(caminhoAbsoluto)) {
             return res.status(404).json({ erro: "Arquivo de imagem não encontrado no servidor" })
         }
-
+        console.log("Imagem da planta encontrada, enviando ao cliente...")
         return res.status(200).sendFile(caminhoAbsoluto)
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({ erro: "Erro ao buscar planta" })
+        return res.status(500).json({ erro: "Erro ao buscar planta" })
     }
 
 
@@ -168,6 +173,7 @@ export async function buscarEspecies(req, res) {
 export async function buscarEspeciePorclassificao(req, res) {
     const classificacaoID = parseInt(req.params.classificaoId)
 
+    console.log("Tentanto buscar espécies por classificação...")
     try {
 
         let resultados = await EspeciePlanta.buscarEspeciesPorClassificacao(classificacaoID)
@@ -176,11 +182,11 @@ export async function buscarEspeciePorclassificao(req, res) {
         if (!resultados || resultados.length == 0) {
             res.status(404).json('nenhuma especie pertencente a essa classificação encontrada')
         }
-
-        res.status(200).json(resultados)
+        console.log("Espécies encontradas, enviando ao cliente...")
+        return res.status(200).json(resultados)
 
     } catch (error) {
-        console.log(error)
+        console.log("Erro ao buscar espécies por classificação:", error)
         res.status(error.statusCode || 500)
         throw error
     }
@@ -207,11 +213,11 @@ export async function climaAtual(req, res) {
 
         const clima = processarClima(climaDados);
 
-        return res.status(200).json(clima);
-    } catch (error) {
-        console.error("❌ Erro no climaAtual:", error.message);
-        return res.status(500).json({ error: "Erro ao obter dados do clima" });
-    }
+    return res.status(200).json(clima);
+  } catch (error) {
+    console.error("❌ Erro no climaAtual:", error.message);
+    return res.status(500).json({ error: "Erro ao obter dados do clima" });
+  }
 }
 export async function buscarGuiaCuidado(req, res) {
     const idEspecie = req.params.id

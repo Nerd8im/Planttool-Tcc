@@ -2,7 +2,7 @@ import cron from "node-cron"
 import { operacoesGerais } from "../DAO/operacoesDB.js"
 
 // Função para verificar plantas que precisam ser regadas
-async function verificarPlantasParaRegar() {
+export async function verificarPlantasParaRegar() {
     const query = `
         SELECT up.userPlanta_id, up.userPlanta_nome, up.ultima_rega, pe.plantaEspecie_intervalo_rega_horas
         FROM tb_userPlanta up
@@ -25,11 +25,11 @@ async function verificarPlantasParaRegar() {
             }
         }
 
-        // if (plantasParaRegar.length > 0) {
-        //     console.log("Plantas que precisam ser regadas:", plantasParaRegar)
-        // } else {
-        //     console.log("Nenhuma planta precisa ser regada agora.")
-        // }
+        if (plantasParaRegar.length > 0) {
+            console.log("Plantas que precisam ser regadas:", plantasParaRegar)
+        } else {
+            console.log("Nenhuma planta precisa ser regada agora.")
+        }
         return plantasParaRegar
     } catch (error) {
         console.error("Erro ao verificar plantas para regar:", error)
@@ -37,4 +37,10 @@ async function verificarPlantasParaRegar() {
 }
 
 // Agendado para rodar a cada 1 minuto
-cron.schedule("* * * * *", verificarPlantasParaRegar)
+cron.schedule("* * * * *", async () => {
+    try {
+        await verificarPlantasParaRegar()
+    } catch (err) {
+        console.error("Erro ao executar tarefa cron:", err)
+    }
+})

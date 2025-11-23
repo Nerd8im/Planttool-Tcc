@@ -13,13 +13,15 @@ export async function registrarUsuario(req, res) {
 
     const { nome, sobrenome, email, senha } = req.body
 
+    console.log("Tentanto registrar usuário...")
     try {
         const resposta = await Usuario.registrar(nome, sobrenome, email, senha)
+        console.log("Usuário registrado com sucesso.")
         res.status(200).json(resposta)
 
     } catch (error) {
-        console.error(error)
-        res.status(error.statusCode || 500).json({ erro: error.message })
+        console.error("Erro ao registrar usuário:", error)
+        res.status(error.statusCode || 500).json({ erro: error.message})
     }
 
 }
@@ -32,13 +34,14 @@ export async function login(req, res) {
         res.status(400).json("Todos os campos são obrigatorios")
     }
 
+    console.log("Tentanto logar usuário...")
     try {
         const respostaLogin = await Usuario.autenticar(email, senha)
-
+        console.log("Usuário logado com sucesso.")
         res.status(200).json(respostaLogin)
 
     } catch (error) {
-        console.error(error)
+        console.error("erro ao logar usuário:", error)
         res.status(error.statusCode || 500).json({ erro: error.message })
     }
 
@@ -55,6 +58,7 @@ export async function postarImagem(req, res) {
     const caminhoOriginal = req.file.path;
     const caminhoFinal = path.join(path.dirname(caminhoOriginal), "foto-" + req.file.filename)
 
+    console.log("Processando imagem enviada...");
     try {
         const metadata = await sharp(caminhoOriginal).metadata();
 
@@ -64,15 +68,15 @@ export async function postarImagem(req, res) {
                 .jpeg({ quality: 80 })
                 .toFile(caminhoFinal);
             fs.unlinkSync(caminhoOriginal);
-
         } else {
             fs.renameSync(caminhoOriginal, caminhoFinal)
         }
-
+        
+        console.log("Imagem redimensionada e salva");
         return res.status(200).json({ mensagem: "Imagem enviada com sucesso", caminho: caminhoFinal })
 
     } catch (error) {
-        console.error(error);
+        console.error("Erro ao processar imagem:", error);
         res.status(error.statusCode || 500).json({ erro: error.message });
     }
 }
@@ -85,7 +89,7 @@ export async function registrarEspecie(req, res) {
     if (!nome || !descricao || !cuidados || !classificacao || !rega) {
         throw criarErro("Todos os campos são obrigatórios")
     }
-
+    console.log("Tentanto registrar a especie...")
     try {
 
         const respostaRegistro = await EspeciePlanta.registrar(nome, descricao, cuidados, rega, classificacao)
@@ -93,6 +97,7 @@ export async function registrarEspecie(req, res) {
         res.status(200).json(respostaRegistro)
 
     } catch (error) {
+        console.error("Erro ao registrar a especie:", error)
         throw criarErro("Erro ao tentar registrar a especie", 500)
     }
 
@@ -110,8 +115,8 @@ export async function registrarPlanta(req, res) {
         return res.status(400).json({ erro: "Todos os campos são obrigatórios" })
     }
 
+    console.log("Tentanto registrar a planta do usuário...")
     try {
-
         const plantaId = uuidv4()
         req.plantaId = plantaId
 
@@ -131,6 +136,7 @@ export async function registrarPlanta(req, res) {
             plantaId
         )
 
+        console.log("Planta do usuário registrada com sucesso.")
         return res.status(200).json({
             mensagem: "Planta registrada com sucesso",
             planta: respostaRegistro,
@@ -143,22 +149,39 @@ export async function registrarPlanta(req, res) {
 
 
 export async function analiseGemni(req, res) {
+    const texto = req.body.text || ""
     if (!req.file) {
         throw criarErro("Imagem não enviada", 400)
     }
 
-    const caminhoOriginal = req.file.path
-    const caminhoFinal = path.relative(process.cwd(), req.file.path)
+   try {
+        const imageBuffer = fs.readFileSync(req.file.path);
 
-    const imageBuffer = fs.readFileSync(caminhoFinal)
+        console.log("Imagem lida para análise com Gemini.");
 
-    try {
-        const descricao = await geminiAPI(imageBuffer)
-        return res.status(200).json({ descricao: descricao })
+        const descricao = await geminiAPI(texto, imageBuffer);
+
+        console.log("Descrição gerada com sucesso.");
+
+        return res.status(200).json({ descricao });
     } catch (error) {
-        console.error("Erro ao gerar descrição com Gemini:", error)
-        return criarErro("Erro ao analisar imagem", 500)
+        console.error("Erro ao gerar descrição com Gemini:", error);
+        return res.status(500).json({ erro: "Erro ao analisar imagem" });
+    }
+}
 
+export async function registrarGuiaCuidado(req, res) {
+    const { id } = req.params
+    const { titulo, conteudo } = req.body
+    if (!id || !titulo || !conteudo) {
+        return res.status(400).json({ erro: "Todos os campos são obrigatórios" })
+    }
+    try {
+        let resposta = await GuiaCuidados.registrarGuia(id, titulo, conteudo)
+        return res.status(200).json({ mensagem: resposta })
+    } catch (error) {
+        console.error("Erro ao registrar guia de cuidado:", error)
+        return res.status(500).json({ erro: "Erro ao registrar guia de cuidado" })
     }
 }
 

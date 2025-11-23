@@ -94,8 +94,6 @@ const swaggerOptions = {
 };
 
 const specs = swaggerJsdoc(swaggerOptions)
-
-console.log(JSON.stringify(specs.paths, null, 2));
 // Função para ser importada no server.js
 export function setupSwagger(app) {
     app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs))

@@ -1,7 +1,7 @@
 import express from "express"
 import 'dotenv/config.js'
 import cors from "cors"
-// import "./src/services/tarefasAutomaticas.js" // Manter se for necessário
+import './src/services/tarefasAutomaticas.js' // Somente para ativar o cron
 import autenticarToken from "./src/middlewares/autenticarToken.js"
 import { login, postarImagem, registrarUsuario, registrarEspecie, registrarPlanta, analiseGemni, registrarGuiaCuidado } from "./src/Controllers/post_controllers.js"
 import { trocarFotoPerfil, alterarDadosUsuario, alterarImagemPlanta} from "./src/Controllers/put_controllers.js"
@@ -13,7 +13,7 @@ import { pegarImagemPlanta, buscarEspeciePorclassificao, buscarPlantaId, pegarIm
 import { setupSwagger } from './src/documentacao/swaggerConfig.js'
 
 const app = express()
-const porta = 3000
+const porta = process.env.PORT || 3000
 const rota = '/planttool/v1'
 
 // --- Middlewares de Upload específicos para cada rota ---
@@ -66,7 +66,7 @@ app.get(`${rota}/PlantasUsuario`, autenticarToken, buscarPlantasUsuario)
 app.get(`${rota}/plantaUsuario/:id`, autenticarToken, buscarPlantaId)
 app.get(`${rota}/plantaUsuario/imagem/:id`, autenticarToken, pegarImagemPlanta)
 app.put(`${rota}/plantaUsuario/alterarImagem/:id`, autenticarToken, uploadFotoPlanta, alterarImagemPlanta)
-app.post(`${rota}/plantaUsuario/regar/:id`, autenticarToken,)
+// app.post(`${rota}/plantaUsuario/regar/:id`, autenticarToken, verificarPlantasParaRegar)
 app.delete(`${rota}/plantaUsuario/deletar/:id`, autenticarToken, deletarPlantaUsuario)
 
 // ------------------------------
@@ -86,7 +86,8 @@ app.get(`${rota}/clima`, climaAtual)
 // === INICIALIZAÇÃO DO SERVIDOR =====================================
 // =================================================================
 
-app.listen(porta, () => {
+app.listen(porta, "0.0.0.0",() => {
     console.log(`Servidor rodando em http://localhost:${porta}${rota}`)
     console.log(`Documentação disponível em: http://localhost:${porta}/api-docs`)
+
 })

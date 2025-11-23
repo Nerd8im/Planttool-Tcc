@@ -4,8 +4,6 @@ import { criarErro } from "../utils/erros.js"
 import sharp from "sharp"
 import fs from "fs"
 import path from "path"
-
-
 // Usuário
 export async function alterarDadosUsuario(req, res) {
 
