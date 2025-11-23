@@ -11,6 +11,9 @@ tags:
   - name: Serviços Externos (IA/Clima)
     description: Integrações com Gemini (IA) e Open-Meteo (Clima).
 
+  - name: Guia Cuidado # NOVA TAG
+    description: Guias e artigos de cuidado, frequentemente relacionados a uma espécie específica.
+
 paths:
   /registrarUsuario:
     post:
@@ -190,7 +193,9 @@ paths:
     post:
       tags: [Espécie]
       summary: Registra uma nova espécie no catálogo.
-      description: Requer privilégios de administrador. (A segurança não está implementada nesta rota de exemplo, mas deveria)
+      description: Requer privilégios de administrador.
+      security: # CORREÇÃO: Adicionada segurança (bearerAuth)
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -232,6 +237,8 @@ paths:
                     example: 'Espécie cadastrada com sucesso'
         '400':
           description: Campos obrigatórios ausentes.
+        '401':
+          description: Não autorizado (token ausente ou inválido).
         '500':
           description: Erro ao tentar registrar a espécie.
 
@@ -276,14 +283,14 @@ paths:
         '500':
           description: Erro interno do servidor.
 
-  /especies/{classificaoId}:
+  /especies/{classificacaoId}: # CORREÇÃO: Nome da rota corrigido
     get:
       tags: [Espécie]
       summary: Retorna espécies por classificação botânica.
       description: Lista espécies filtradas por Classification ID.
       parameters:
         - in: path
-          name: classificaoId
+          name: classificacaoId # CORREÇÃO: Nome do parâmetro corrigido
           required: true
           schema:
             type: string
@@ -345,7 +352,7 @@ paths:
         '500':
           description: Erro no registro da planta.
 
-  /PlantasUsuario:
+  /plantasUsuario: # CORREÇÃO: Nome da rota padronizado (minúsculo). O código-fonte usa /PlantasUsuario.
     get:
       tags: [Planta Usuário]
       summary: Retorna todas as plantas do usuário autenticado.
@@ -540,6 +547,116 @@ paths:
           description: Planta não encontrada.
         '500':
           description: Erro interno ao deletar.
+
+  ###################################
+  ## ROTAS GUIA CUIDADO (NOVAS)
+  ###################################
+
+  /especies/guia/{id}: # Rotas implementadas em /especies/guia/
+    get:
+      tags: [Guia Cuidado]
+      summary: Busca um Guia de Cuidado associado a uma Espécie.
+      description: Utiliza o ID da espécie como parâmetro. Requer autenticação.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: ID da espécie (`plantaEspecie_id`).
+      responses:
+        '200':
+          description: Guia de cuidado retornado.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuiaCuidado'
+        '401':
+          description: Não autorizado.
+        '404':
+          description: Guia não encontrado para a espécie fornecida.
+    post:
+      tags: [Guia Cuidado]
+      summary: Registra um novo Guia de Cuidado para uma Espécie. (Requer privilégios)
+      description: Requer autenticação. O ID no path é o ID da espécie.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: ID da espécie a ser associada (`plantaEspecie_id`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [titulo, conteudo]
+              properties:
+                titulo:
+                  type: string
+                  example: 'Cuidados de Inverno'
+                conteudo:
+                  type: string
+                  example: 'Reduza a rega, garanta a luz...'
+      responses:
+        '200':
+          description: Guia registrado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: 'Guia cadastrado com sucesso'
+        '400':
+          description: Campos obrigatórios ausentes.
+        '401':
+          description: Não autorizado.
+        '500':
+          description: Erro ao registrar o guia.
+
+  /especies/guia/deletar/{id}:
+    delete:
+      tags: [Guia Cuidado]
+      summary: Deleta um Guia de Cuidado pelo seu ID. (Requer privilégios)
+      description: Requer autenticação. O ID no path é o ID do Guia (`guiaCuidado_id`).
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            description: ID do Guia de Cuidado a ser deletado (`guiaCuidado_id`).
+      responses:
+        '200':
+          description: Guia deletado com sucesso.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensagem:
+                    type: string
+                    example: 'Guia deletado com sucesso'
+        '401':
+          description: Não autorizado.
+        '404':
+          description: Guia não encontrado.
+        '500':
+          description: Erro interno do servidor.
+
+  ###################################
+  ## ROTAS DE IA E CLIMA
+  ###################################
 
   /gemini:
     post:

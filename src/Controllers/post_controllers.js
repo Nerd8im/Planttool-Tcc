@@ -184,18 +184,3 @@ export async function registrarGuiaCuidado(req, res) {
         return res.status(500).json({ erro: "Erro ao registrar guia de cuidado" })
     }
 }
-
-export async function registrarGuiaCuidado(req, res) {
-    const { id } = req.params
-    const { titulo, conteudo } = req.body
-    if (!id || !titulo || !conteudo) {
-        return res.status(400).json({ erro: "Todos os campos são obrigatórios" })
-    }
-    try {
-        let resposta = await GuiaCuidados.registrarGuia(id, titulo, conteudo)
-        return res.status(200).json({ mensagem: resposta })
-    } catch (error) {
-        console.error("Erro ao registrar guia de cuidado:", error)
-        return res.status(500).json({ erro: "Erro ao registrar guia de cuidado" })
-    }
-}

@@ -70,6 +70,15 @@ const swaggerOptions = {
                         userPlanta_foto: { type: 'string', example: 'uploads/plantas/101_foto.jpg', nullable: true, description: 'Caminho do arquivo de foto da planta (tb_userPlanta.userPlanta_foto).' },
                     }
                 },
+                GuiaCuidado: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'integer', example: 101, description: 'ID do Guia de Cuidado (tb_guiaCuidado.guiaCuidado_id).' },
+                        titulo: { type: 'string', example: 'Guia de Luz e Sombra', description: 'Título do guia.' },
+                        conteudo: { type: 'string', example: 'Entenda a diferença entre luz direta e indireta...', description: 'Conteúdo detalhado do guia.' },
+                        especieId: { type: 'integer', example: 5, nullable: true, description: 'ID da espécie relacionada (opcional).' }
+                    }
+                },
                 ClimaResposta: {
                     type: 'object',
                     properties: {

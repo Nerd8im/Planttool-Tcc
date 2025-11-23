@@ -50,17 +50,3 @@ export async function deletarGuiaCuidado(req, res) {
         res.status(error.statusCode || 500).json({ erro: error.message })
     }
 }
-
-export async function deletarGuiaCuidado(req, res) {
-    const idGuia = req.params.id
-    if (!idGuia) {
-        return res.status(400).json({ erro: "ID do guia não fornecido" })
-    }
-    try {
-        const resposta = await GuiaCuidados.deletarGuia(idGuia)
-        res.status(200).json(resposta)
-    } catch (error) {
-        console.error(error)
-        res.status(error.statusCode || 500).json({ erro: error.message })
-    }
-}
